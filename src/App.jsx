@@ -21,7 +21,7 @@ function SyncBar() {
                     bg-sage/90 backdrop-blur-sm text-white text-xs font-semibold
                     flex items-center justify-center gap-2 py-2">
       <RefreshCw size={12} className="animate-spin" />
-      GitHub에 저장 중…
+      엉뚱이네 데이터 저장 중…
     </div>
   )
   return (
