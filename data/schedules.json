@@ -4,10 +4,11 @@
     "date": "2026-04-13",
     "startTime": "10:00",
     "endTime": "10:10",
-    "category": "other",
+    "category": "cat_1776044723273",
     "note": "함이 빨래 개키기!!",
     "id": "sch_1776042678520_jghy",
     "completed": false,
-    "createdAt": "2026-04-13T01:11:18.520Z"
+    "createdAt": "2026-04-13T01:11:18.520Z",
+    "repeat": "none"
   }
 ]
