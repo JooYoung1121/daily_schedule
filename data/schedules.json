@@ -531,5 +531,18 @@
     "id": "sch_1776087791601_vpvr",
     "completed": false,
     "createdAt": "2026-04-13T13:43:11.601Z"
+  },
+  {
+    "title": "난슬산책",
+    "date": "2026-04-29",
+    "startTime": "15:00",
+    "endTime": "15:20",
+    "category": "cat_1776087675994",
+    "note": "",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087792419_cag3",
+    "completed": false,
+    "createdAt": "2026-04-13T13:43:12.419Z"
   }
 ]
