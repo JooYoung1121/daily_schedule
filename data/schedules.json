@@ -609,5 +609,18 @@
     "id": "sch_1776087796516_m9ho",
     "completed": false,
     "createdAt": "2026-04-13T13:43:16.516Z"
+  },
+  {
+    "title": "난슬산책",
+    "date": "2026-05-05",
+    "startTime": "15:00",
+    "endTime": "15:20",
+    "category": "cat_1776087675994",
+    "note": "",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087797642_z0r8",
+    "completed": false,
+    "createdAt": "2026-04-13T13:43:17.642Z"
   }
 ]
