@@ -104,6 +104,21 @@ export async function saveCategories(categories, sha) {
   return saveFile('data/categories.json', categories, sha, `categories: update ${timestamp()}`)
 }
 
+// ─── Settings ─────────────────────────────────────────────────────────────────
+
+export const DEFAULT_SETTINGS = {
+  babyBirthdate: '',
+}
+
+export async function fetchSettings() {
+  const { data, sha } = await fetchFile('data/settings.json', DEFAULT_SETTINGS)
+  return { settings: data, sha }
+}
+
+export async function saveSettings(settings, sha) {
+  return saveFile('data/settings.json', settings, sha, `settings: update ${timestamp()}`)
+}
+
 // ─── Token test ───────────────────────────────────────────────────────────────
 
 export async function testToken() {

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ScheduleProvider } from './context/ScheduleContext'
 import { CategoryProvider } from './context/CategoryContext'
+import { SettingsProvider } from './context/SettingsContext'
 import { hasToken } from './github'
 import Today    from './pages/Today'
 import Week     from './pages/Week'
@@ -93,6 +94,7 @@ export default function App() {
   }
 
   return (
+    <SettingsProvider>
     <CategoryProvider>
       <ScheduleProvider>
         <HashRouter>
@@ -100,5 +102,6 @@ export default function App() {
         </HashRouter>
       </ScheduleProvider>
     </CategoryProvider>
+    </SettingsProvider>
   )
 }

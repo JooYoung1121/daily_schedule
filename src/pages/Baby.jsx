@@ -1,6 +1,5 @@
 import { useState } from 'react'
-
-const BABY_KEY = 'baby_birthdate'
+import { useSettings } from '../context/SettingsContext'
 
 // 국가예방접종 스케줄 (출생 후 일수 기준)
 const VACCINATIONS = [
@@ -110,19 +109,31 @@ function getCurrentMilestone(weeks) {
 }
 
 export default function Baby() {
-  const [birthdate, setBirthdate] = useState(() => localStorage.getItem(BABY_KEY) || '')
-  const [inputDate, setInputDate] = useState(birthdate)
-  const [editing,   setEditing]   = useState(!birthdate)
+  const { settings, loading: settingsLoading, updateSetting } = useSettings()
+  const birthdate = settings.babyBirthdate || ''
 
-  function handleSave() {
+  const [inputDate, setInputDate] = useState('')
+  const [editing,   setEditing]   = useState(false)
+
+  // 로딩 완료 후 편집 모드 판단
+  const showEditor = !settingsLoading && (!birthdate || editing)
+
+  async function handleSave() {
     if (!inputDate) return
-    localStorage.setItem(BABY_KEY, inputDate)
-    setBirthdate(inputDate)
+    await updateSetting('babyBirthdate', inputDate)
     setEditing(false)
   }
 
+  if (settingsLoading) {
+    return (
+      <div className="flex flex-col bg-warm-100 items-center justify-center" style={{ height: '100%' }}>
+        <p className="text-warm-400 text-sm">불러오는 중…</p>
+      </div>
+    )
+  }
+
   // ── 생일 입력 화면 ──
-  if (editing || !birthdate) {
+  if (showEditor) {
     return (
       <div className="flex flex-col bg-warm-100" style={{ height: '100%' }}>
         <div className="px-5 pt-8 pb-4">
@@ -175,7 +186,7 @@ export default function Baby() {
           </div>
           <button
             onClick={() => { setInputDate(birthdate); setEditing(true) }}
-            className="text-[12px] text-warm-500 bg-warm-200 px-3 py-1.5 rounded-full active:bg-warm-300 transition-colors"
+            className="text-[12px] text-warm-500 bg-warm-200 px-3 py-1.5 rounded-full active:bg-warm-300 transition-colors flex-shrink-0"
           >
             생일 변경
           </button>
