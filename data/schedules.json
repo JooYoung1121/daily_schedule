@@ -1025,5 +1025,18 @@
     "id": "sch_1776087914400_dihx",
     "completed": false,
     "createdAt": "2026-04-13T13:45:14.400Z"
+  },
+  {
+    "title": "저녁",
+    "date": "2026-04-13",
+    "startTime": "18:00",
+    "endTime": "19:00",
+    "category": "other",
+    "note": "",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087930922_nshz",
+    "completed": false,
+    "createdAt": "2026-04-13T13:45:30.922Z"
   }
 ]
