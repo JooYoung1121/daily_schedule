@@ -869,5 +869,18 @@
     "id": "sch_1776087899124_g2bs",
     "completed": false,
     "createdAt": "2026-04-13T13:44:59.124Z"
+  },
+  {
+    "title": "점심",
+    "date": "2026-04-19",
+    "startTime": "12:00",
+    "endTime": "13:00",
+    "category": "other",
+    "note": "",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087899942_szwa",
+    "completed": false,
+    "createdAt": "2026-04-13T13:44:59.942Z"
   }
 ]
