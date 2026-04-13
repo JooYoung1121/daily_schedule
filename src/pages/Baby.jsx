@@ -182,20 +182,31 @@ export default function Baby() {
         </div>
 
         {/* Age progress (0~12개월) */}
-        <div className="mt-3 bg-warm-200 rounded-full h-1.5 overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{
-              width: `${Math.min((age.totalDays / 365) * 100, 100)}%`,
-              backgroundColor: milestone.color,
-            }}
-          />
-        </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[10px] text-warm-400">출생</span>
-          <span className="text-[10px] text-warm-400">D+{age.totalDays}</span>
-          <span className="text-[10px] text-warm-400">12개월</span>
-        </div>
+        {(() => {
+          const pct = Math.min((age.totalDays / 365) * 100, 100)
+          // clamp label so it doesn't overflow edges
+          const labelLeft = Math.min(Math.max(pct, 4), 94)
+          return (
+            <>
+              <div className="mt-3 bg-warm-200 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${pct}%`, backgroundColor: milestone.color }}
+                />
+              </div>
+              <div className="relative mt-1" style={{ height: '16px' }}>
+                <span className="absolute left-0 text-[10px] text-warm-400">출생</span>
+                <span
+                  className="absolute text-[10px] font-bold -translate-x-1/2 whitespace-nowrap"
+                  style={{ left: `${labelLeft}%`, color: milestone.color }}
+                >
+                  D+{age.totalDays}
+                </span>
+                <span className="absolute right-0 text-[10px] text-warm-400">12개월</span>
+              </div>
+            </>
+          )
+        })()}
       </div>
 
       {/* Content */}
