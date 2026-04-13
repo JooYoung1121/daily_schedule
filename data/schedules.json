@@ -921,5 +921,18 @@
     "id": "sch_1776087902400_09qb",
     "completed": false,
     "createdAt": "2026-04-13T13:45:02.400Z"
+  },
+  {
+    "title": "점심",
+    "date": "2026-04-23",
+    "startTime": "12:00",
+    "endTime": "13:00",
+    "category": "other",
+    "note": "",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087903320_6mvn",
+    "completed": false,
+    "createdAt": "2026-04-13T13:45:03.320Z"
   }
 ]
