@@ -1,0 +1,7 @@
+[
+  { "id": "work",     "label": "업무", "color": "#5E9E8A" },
+  { "id": "personal", "label": "개인", "color": "#D4715A" },
+  { "id": "health",   "label": "건강", "color": "#C8924A" },
+  { "id": "study",    "label": "학습", "color": "#8B7EC8" },
+  { "id": "other",    "label": "기타", "color": "#9B8E87" }
+]
