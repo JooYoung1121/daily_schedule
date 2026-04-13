@@ -9,7 +9,7 @@ export default function TimelineBlock({ schedule, onToggle, onEdit }) {
   const height = blockHeight(schedule.startTime, schedule.endTime)
   const done   = schedule.completed
 
-  const bg = done ? '#F0ECE8' : cat.color + '20'
+  const bg = done ? '#F0ECE8' : cat.color + '28'
   const border = done ? '#C4B8B0' : cat.color
 
   return (

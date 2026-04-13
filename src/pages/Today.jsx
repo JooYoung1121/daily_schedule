@@ -119,12 +119,8 @@ export default function Today({ openModal }) {
 
           <div className="flex-1 relative cursor-pointer" style={{ height: TOTAL_H }} onClick={handleGridTap}>
             {HOURS.map(h => (
-              <div key={h} className="absolute left-0 right-0 border-t border-warm-200"
+              <div key={h} className="absolute left-0 right-0 border-t border-warm-200/60"
                    style={{ top: (h - DAY_START) * HOUR_HEIGHT }} />
-            ))}
-            {HOURS.map(h => (
-              <div key={`h-${h}`} className="absolute left-0 right-0 border-t border-warm-200/50 border-dashed"
-                   style={{ top: (h - DAY_START) * HOUR_HEIGHT + HOUR_HEIGHT / 2 }} />
             ))}
 
             {nowTop != null && (

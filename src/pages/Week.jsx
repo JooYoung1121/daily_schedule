@@ -80,9 +80,9 @@ export default function Week({ openModal }) {
               .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
             return (
-              <div key={dayIdx} className="flex-1 relative border-l border-warm-200" style={{ height: TOTAL_H }}>
+              <div key={dayIdx} className="flex-1 relative border-l border-warm-200/60" style={{ height: TOTAL_H }}>
                 {HOURS.map(h => (
-                  <div key={h} className="absolute left-0 right-0 border-t border-warm-200"
+                  <div key={h} className="absolute left-0 right-0 border-t border-warm-200/60"
                        style={{ top: (h - DAY_START) * HOUR_HEIGHT }} />
                 ))}
                 {isToday && <div className="absolute inset-0 bg-terra/[0.04] pointer-events-none" />}
