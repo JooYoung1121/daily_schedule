@@ -271,5 +271,18 @@
     "id": "sch_1776087739888_8zx1",
     "completed": false,
     "createdAt": "2026-04-13T13:42:19.888Z"
+  },
+  {
+    "title": "난슬산책",
+    "date": "2026-05-03",
+    "startTime": "08:30",
+    "endTime": "09:00",
+    "category": "cat_1776087675994",
+    "note": "날씨 상황보고",
+    "repeat": "daily",
+    "person": "all",
+    "id": "sch_1776087740614_c3xc",
+    "completed": false,
+    "createdAt": "2026-04-13T13:42:20.614Z"
   }
 ]
