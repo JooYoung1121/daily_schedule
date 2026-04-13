@@ -1002,28 +1002,28 @@
   },
   {
     "title": "저녁",
-    "date": "2026-04-19",
+    "date": "2026-04-20",
     "startTime": "23:45",
     "endTime": "23:45",
     "category": "other",
     "note": "",
     "repeat": "daily",
     "person": "all",
-    "id": "sch_1776087911716_rap6",
+    "id": "sch_1776087912126_6k1a",
     "completed": false,
-    "createdAt": "2026-04-13T13:45:11.716Z"
+    "createdAt": "2026-04-13T13:45:12.126Z"
   },
   {
     "title": "점심",
-    "date": "2026-05-02",
+    "date": "2026-05-03",
     "startTime": "12:00",
     "endTime": "13:00",
     "category": "other",
     "note": "",
     "repeat": "daily",
     "person": "all",
-    "id": "sch_1776087911817_h45c",
+    "id": "sch_1776087912640_j8um",
     "completed": false,
-    "createdAt": "2026-04-13T13:45:11.817Z"
+    "createdAt": "2026-04-13T13:45:12.640Z"
   }
 ]
