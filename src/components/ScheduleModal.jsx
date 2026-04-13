@@ -40,6 +40,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
     category:  schedule?.category  ?? firstCatId,
     note:      schedule?.note      ?? '',
     repeat:    schedule?.repeat    ?? 'none',
+    person:    schedule?.person    ?? 'all',
   })
   const [saving,   setSaving]   = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -175,6 +176,29 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
             <span className="text-warm-400 font-medium text-sm">–</span>
             <input type="time" value={form.endTime} onChange={e => set('endTime', e.target.value)}
               className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none" />
+          </Row>
+
+          {/* Person */}
+          <Row label="담당">
+            <div className="flex gap-2">
+              {[
+                { value: 'all', label: '공통', emoji: '👫' },
+                { value: 'mom', label: '엄마', emoji: '👩' },
+                { value: 'dad', label: '아빠', emoji: '👨' },
+              ].map(p => (
+                <button
+                  key={p.value}
+                  onClick={() => set('person', p.value)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-semibold transition-all active:scale-95"
+                  style={{
+                    background: form.person === p.value ? '#D4715A' : '#F5EFE6',
+                    color:      form.person === p.value ? '#fff'    : '#8A7B72',
+                  }}
+                >
+                  <span>{p.emoji}</span>{p.label}
+                </button>
+              ))}
+            </div>
           </Row>
 
           {/* Category */}

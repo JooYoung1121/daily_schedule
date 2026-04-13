@@ -21,8 +21,15 @@ export default function Today({ openModal }) {
 
   const [nowTop,     setNowTop]     = useState(currentTimeTop())
   const [filter,     setFilter]     = useState('all')
-  const [showCatMgr, setShowCatMgr] = useState(false)
+  const [showCatMgr,  setShowCatMgr]  = useState(false)
+  const [personFilter, setPersonFilter] = useState('all')
   const timelineRef = useRef(null)
+
+  const PERSON_TABS = [
+    { value: 'all', label: '전체', emoji: '👫' },
+    { value: 'mom', label: '엄마', emoji: '👩' },
+    { value: 'dad', label: '아빠', emoji: '👨' },
+  ]
 
   useEffect(() => {
     const t = setInterval(() => setNowTop(currentTimeTop()), 60_000)
@@ -39,6 +46,11 @@ export default function Today({ openModal }) {
     : schedules.filter(s => s.category === filter)
 
   const sorted = [...displayed].sort((a, b) => a.startTime.localeCompare(b.startTime))
+
+  // Right timeline also filters by person
+  const timelineBlocks = personFilter === 'all'
+    ? displayed
+    : displayed.filter(s => s.person === personFilter || (!s.person && personFilter === 'all'))
 
   const completed = schedules.filter(s => s.completed).length
   const total     = schedules.length
@@ -140,12 +152,16 @@ export default function Today({ openModal }) {
                       <p className="text-[11px] font-medium mt-0.5" style={{ color: cat.color + 'AA' }}>
                         {s.startTime} – {s.endTime}
                       </p>
-                      <span
-                        className="mt-1.5 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
-                        style={{ background: cat.color + '20', color: cat.color }}
-                      >
-                        {cat.label}
-                      </span>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <span
+                          className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: cat.color + '20', color: cat.color }}
+                        >
+                          {cat.label}
+                        </span>
+                        {s.person === 'mom' && <span className="text-[11px]">👩</span>}
+                        {s.person === 'dad' && <span className="text-[11px]">👨</span>}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -155,7 +171,25 @@ export default function Today({ openModal }) {
         </div>
 
         {/* ── Right: Structured timeline ── */}
-        <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Person filter tabs */}
+          <div className="flex gap-1.5 px-2 py-2 flex-shrink-0 border-b border-warm-200/60">
+            {PERSON_TABS.map(p => (
+              <button
+                key={p.value}
+                onClick={() => setPersonFilter(p.value)}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
+                style={{
+                  background: personFilter === p.value ? '#D4715A' : '#F0EAE4',
+                  color:      personFilter === p.value ? '#fff'    : '#8A7B72',
+                }}
+              >
+                <span>{p.emoji}</span>{p.label}
+              </button>
+            ))}
+          </div>
+
+          <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
           <div className="flex pl-1 pb-28">
             {/* Time labels */}
             <div className="w-[36px] flex-shrink-0 relative select-none" style={{ height: TOTAL_H }}>
@@ -194,7 +228,7 @@ export default function Today({ openModal }) {
                 </div>
               )}
 
-              {displayed.map(s => (
+              {timelineBlocks.map(s => (
                 <StructuredBlock
                   key={s.id}
                   schedule={s}
@@ -203,6 +237,7 @@ export default function Today({ openModal }) {
                 />
               ))}
             </div>
+          </div>
           </div>
         </div>
       </div>
