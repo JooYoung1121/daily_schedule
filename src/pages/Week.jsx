@@ -1,0 +1,173 @@
+import { useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import {
+  formatDate, getWeekDates, getKoreanDay,
+  HOUR_HEIGHT, DAY_START, DAY_END,
+  timeToTop, blockHeight, CATEGORIES,
+} from '../utils'
+import { useWeekSchedules } from '../context/ScheduleContext'
+
+const HOURS   = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START + i)
+const TOTAL_H = (DAY_END - DAY_START) * HOUR_HEIGHT
+
+export default function Week({ openModal }) {
+  const [base, setBase] = useState(new Date())
+  const weekDates    = getWeekDates(base)
+  const weekDateStrs = weekDates.map(formatDate)
+  const { schedules } = useWeekSchedules(weekDateStrs)
+
+  const todayStr = formatDate(new Date())
+
+  const prevWeek = () => {
+    const d = new Date(base)
+    d.setDate(d.getDate() - 7)
+    setBase(d)
+  }
+  const nextWeek = () => {
+    const d = new Date(base)
+    d.setDate(d.getDate() + 7)
+    setBase(d)
+  }
+
+  const monthLabel = (() => {
+    const m0 = weekDates[0].getMonth() + 1
+    const m6 = weekDates[6].getMonth() + 1
+    const y  = weekDates[0].getFullYear()
+    return m0 === m6
+      ? `${y}년 ${m0}월`
+      : `${y}년 ${m0}월 - ${m6}월`
+  })()
+
+  return (
+    <div className="flex flex-col bg-warm-100 overflow-hidden" style={{ height: '100%' }}>
+
+      {/* ── Header ── */}
+      <div className="px-5 pt-8 pb-3 flex-shrink-0">
+        <h1 className="text-[1.35rem] font-bold text-warm-900 tracking-tight mb-3">주간 일정</h1>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={prevWeek}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+          >
+            <ChevronLeft size={18} className="text-warm-700" />
+          </button>
+          <span className="text-sm font-semibold text-warm-700">{monthLabel}</span>
+          <button
+            onClick={nextWeek}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+          >
+            <ChevronRight size={18} className="text-warm-700" />
+          </button>
+        </div>
+      </div>
+
+      {/* ── Day header row ── */}
+      <div className="flex px-4 pb-2 flex-shrink-0">
+        <div className="w-[44px] flex-shrink-0" />
+        {weekDates.map((date, i) => {
+          const ds      = formatDate(date)
+          const isToday = ds === todayStr
+          const isSun   = date.getDay() === 0
+          const isSat   = date.getDay() === 6
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <span className="text-[11px] font-medium text-warm-400">
+                {getKoreanDay(date)}
+              </span>
+              <div
+                className={`w-7 h-7 flex items-center justify-center rounded-full text-[13px] font-bold
+                  ${isToday
+                    ? 'bg-terra text-white'
+                    : isSun
+                      ? 'text-red-400'
+                      : isSat
+                        ? 'text-blue-400'
+                        : 'text-warm-700'
+                  }`}
+              >
+                {date.getDate()}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ── Week timeline grid ── */}
+      <div className="flex-1 overflow-y-auto scrollbar-none px-4 pb-28">
+        <div className="flex">
+          {/* Time labels */}
+          <div className="w-[44px] flex-shrink-0 relative select-none" style={{ height: TOTAL_H }}>
+            {HOURS.map(h => (
+              <div
+                key={h}
+                className="absolute right-1 text-[10px] font-medium text-warm-400"
+                style={{ top: (h - DAY_START) * HOUR_HEIGHT - 7 }}
+              >
+                {h}
+              </div>
+            ))}
+          </div>
+
+          {/* Day columns */}
+          {weekDates.map((date, dayIdx) => {
+            const ds         = formatDate(date)
+            const isToday    = ds === todayStr
+            const dayScheds  = schedules
+              .filter(s => s.date === ds)
+              .sort((a, b) => a.startTime.localeCompare(b.startTime))
+
+            return (
+              <div
+                key={dayIdx}
+                className="flex-1 relative border-l border-warm-200"
+                style={{ height: TOTAL_H }}
+              >
+                {/* Hour lines */}
+                {HOURS.map(h => (
+                  <div
+                    key={h}
+                    className="absolute left-0 right-0 border-t border-warm-200"
+                    style={{ top: (h - DAY_START) * HOUR_HEIGHT }}
+                  />
+                ))}
+
+                {/* Today column highlight */}
+                {isToday && (
+                  <div className="absolute inset-0 bg-terra/[0.04] pointer-events-none" />
+                )}
+
+                {/* Schedule mini-blocks */}
+                {dayScheds.map(s => {
+                  const cat = CATEGORIES[s.category] || CATEGORIES.other
+                  const top = timeToTop(s.startTime)
+                  const h   = Math.max(blockHeight(s.startTime, s.endTime), 20)
+                  return (
+                    <div
+                      key={s.id}
+                      className="absolute left-0.5 right-0.5 rounded-md overflow-hidden cursor-pointer active:opacity-70 transition-opacity"
+                      style={{
+                        top,
+                        height:          h,
+                        backgroundColor: cat.bg,
+                        borderLeft:      `2.5px solid ${cat.color}`,
+                        opacity:         s.completed ? 0.45 : 1,
+                      }}
+                      onClick={() => openModal({ schedule: s })}
+                    >
+                      <p
+                        className="text-[10px] font-semibold px-1 pt-0.5 leading-tight truncate"
+                        style={{ color: cat.color }}
+                      >
+                        {s.title}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
