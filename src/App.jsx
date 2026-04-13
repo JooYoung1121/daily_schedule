@@ -1,14 +1,16 @@
 import { useState } from 'react'
-import { HashRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ScheduleProvider } from './context/ScheduleContext'
 import { CategoryProvider } from './context/CategoryContext'
 import { hasToken } from './github'
-import Today from './pages/Today'
-import Week from './pages/Week'
+import Today    from './pages/Today'
+import Week     from './pages/Week'
+import Baby     from './pages/Baby'
+import Settings from './pages/Settings'
 import BottomNav from './components/BottomNav'
 import ScheduleModal from './components/ScheduleModal'
 import SetupScreen from './components/SetupScreen'
-import { RefreshCw, AlertCircle } from 'lucide-react'
+import { RefreshCw, AlertCircle, Plus } from 'lucide-react'
 import { useSyncStatus } from './context/ScheduleContext'
 
 function SyncBar() {
@@ -34,6 +36,7 @@ function SyncBar() {
 }
 
 function AppRoutes() {
+  const location = useLocation()
   const [modal, setModal] = useState({
     open: false, schedule: null, defaultDate: null, defaultStartTime: null,
   })
@@ -43,16 +46,33 @@ function AppRoutes() {
   const closeModal = () =>
     setModal({ open: false, schedule: null, defaultDate: null, defaultStartTime: null })
 
+  const showFloatingBtn = ['/', '/week'].includes(location.pathname)
+
   return (
     <div className="flex flex-col bg-warm-100" style={{ height: '100dvh' }}>
       <SyncBar />
       <div className="flex-1 overflow-hidden">
         <Routes>
-          <Route path="/"     element={<Today openModal={openModal} />} />
-          <Route path="/week" element={<Week  openModal={openModal} />} />
+          <Route path="/"         element={<Today    openModal={openModal} />} />
+          <Route path="/week"     element={<Week     openModal={openModal} />} />
+          <Route path="/baby"     element={<Baby />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
-      <BottomNav openModal={openModal} />
+      <BottomNav />
+
+      {/* Floating + button */}
+      {showFloatingBtn && (
+        <button
+          onClick={() => openModal()}
+          className="fixed bottom-[76px] right-4 w-14 h-14 rounded-[18px] bg-terra
+                     flex items-center justify-center shadow-warm-lg
+                     active:scale-95 transition-transform z-30"
+        >
+          <Plus size={26} color="white" strokeWidth={2.5} />
+        </button>
+      )}
+
       {modal.open && (
         <ScheduleModal
           schedule={modal.schedule}
