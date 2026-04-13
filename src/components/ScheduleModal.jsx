@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-import { X, Trash2, RefreshCw } from 'lucide-react'
+import { X, Trash2, RefreshCw, Plus, Check } from 'lucide-react'
 import { formatDate } from '../utils'
 import { useScheduleMutations } from '../context/ScheduleContext'
 import { useCategories } from '../context/CategoryContext'
+
+const QUICK_PALETTE = [
+  '#5E9E8A', '#D4715A', '#C8924A', '#8B7EC8',
+  '#9B8E87', '#E07B8C', '#5B8DB8', '#7BAF5E',
+]
 
 const REPEAT_OPTIONS = [
   { value: 'none',    label: '반복 없음' },
@@ -14,7 +19,7 @@ const REPEAT_OPTIONS = [
 
 export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, onClose }) {
   const { addSchedule, updateSchedule, deleteSchedule } = useScheduleMutations()
-  const { categories, getCategory } = useCategories()
+  const { categories, getCategory, addCategory } = useCategories()
   const isEdit   = !!(schedule?.id)
   const titleRef = useRef(null)
 
@@ -39,8 +44,20 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   const [saving,   setSaving]   = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showRepeat, setShowRepeat] = useState(!!(schedule?.repeat && schedule.repeat !== 'none'))
+  const [showAddCat, setShowAddCat] = useState(false)
+  const [newCatLabel, setNewCatLabel] = useState('')
+  const [newCatColor, setNewCatColor] = useState('#5E9E8A')
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }))
+
+  async function handleAddCat() {
+    if (!newCatLabel.trim()) return
+    const newCat = await addCategory({ label: newCatLabel.trim(), color: newCatColor })
+    if (newCat?.id) set('category', newCat.id)
+    setShowAddCat(false)
+    setNewCatLabel('')
+    setNewCatColor('#5E9E8A')
+  }
 
   useEffect(() => {
     const t = setTimeout(() => titleRef.current?.focus(), 150)
@@ -162,20 +179,72 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
 
           {/* Category */}
           <Row label="카테고리" align="start">
-            <div className="flex gap-2 flex-wrap flex-1">
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => set('category', cat.id)}
-                  className="px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95"
-                  style={{
-                    background: form.category === cat.id ? cat.color : cat.color + '18',
-                    color:      form.category === cat.id ? '#fff'    : cat.color,
-                  }}
-                >
-                  {cat.label}
-                </button>
-              ))}
+            <div className="flex-1">
+              <div className="flex gap-2 flex-wrap">
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => set('category', cat.id)}
+                    className="px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95"
+                    style={{
+                      background: form.category === cat.id ? cat.color : cat.color + '18',
+                      color:      form.category === cat.id ? '#fff'    : cat.color,
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+                {!showAddCat && (
+                  <button
+                    onClick={() => setShowAddCat(true)}
+                    className="px-3 py-1.5 rounded-full text-[13px] font-semibold border border-dashed border-warm-300 text-warm-400 hover:border-warm-400 active:scale-95 transition-all flex items-center gap-1"
+                  >
+                    <Plus size={12} />추가
+                  </button>
+                )}
+              </div>
+
+              {showAddCat && (
+                <div className="mt-2.5 p-3 rounded-2xl bg-warm-100 space-y-2.5">
+                  <input
+                    autoFocus
+                    type="text"
+                    placeholder="카테고리 이름"
+                    value={newCatLabel}
+                    onChange={e => setNewCatLabel(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleAddCat(); if (e.key === 'Escape') setShowAddCat(false) }}
+                    className="w-full bg-white rounded-xl px-3 py-2 text-[13px] text-warm-800 outline-none placeholder-warm-300"
+                  />
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {QUICK_PALETTE.map(c => (
+                      <button
+                        key={c}
+                        onClick={() => setNewCatColor(c)}
+                        className="w-6 h-6 rounded-full transition-transform active:scale-90 flex items-center justify-center"
+                        style={{ backgroundColor: c }}
+                      >
+                        {newCatColor === c && <Check size={11} color="white" strokeWidth={3} />}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setShowAddCat(false); setNewCatLabel('') }}
+                      className="flex-1 py-2 rounded-xl text-[13px] font-semibold text-warm-500 bg-white active:bg-warm-200 transition-colors"
+                    >
+                      취소
+                    </button>
+                    <button
+                      onClick={handleAddCat}
+                      disabled={!newCatLabel.trim()}
+                      className="flex-1 py-2 rounded-xl text-[13px] font-semibold text-white transition-colors disabled:opacity-40"
+                      style={{ backgroundColor: newCatColor }}
+                    >
+                      추가
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </Row>
 

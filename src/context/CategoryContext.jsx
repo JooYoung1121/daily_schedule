@@ -35,6 +35,7 @@ export function CategoryProvider({ children }) {
   const addCategory = useCallback(async (cat) => {
     const newCat = { ...cat, id: `cat_${Date.now()}` }
     await persist([...categories, newCat])
+    return newCat
   }, [categories])
 
   const updateCategory = useCallback(async (id, updates) => {
