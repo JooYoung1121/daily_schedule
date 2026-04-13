@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Settings } from 'lucide-react'
+import { Settings, SlidersHorizontal } from 'lucide-react'
 import {
   formatDate, getKoreanDateStr, getGreeting,
   HOUR_HEIGHT, DAY_START, DAY_END,
@@ -9,6 +9,7 @@ import { useSchedules } from '../context/ScheduleContext'
 import { useCategories } from '../context/CategoryContext'
 import TimelineBlock from '../components/TimelineBlock'
 import CategoryManager from '../components/CategoryManager'
+import SettingsModal from '../components/SettingsModal'
 
 const HOURS   = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START + i)
 const TOTAL_H = (DAY_END - DAY_START) * HOUR_HEIGHT
@@ -22,6 +23,7 @@ export default function Today({ openModal }) {
   const [nowTop,       setNowTop]       = useState(currentTimeTop())
   const [filter,       setFilter]       = useState('all')
   const [showCatMgr,   setShowCatMgr]   = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const scrollRef = useRef(null)
 
   useEffect(() => {
@@ -60,9 +62,8 @@ export default function Today({ openModal }) {
               {getKoreanDateStr(today)}
             </h1>
           </div>
-          {/* Category settings button */}
           <button
-            onClick={() => setShowCatMgr(true)}
+            onClick={() => setShowSettings(true)}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors flex-shrink-0 ml-3 mt-1"
           >
             <Settings size={16} className="text-warm-600" />
@@ -86,20 +87,28 @@ export default function Today({ openModal }) {
       </div>
 
       {/* Category filter chips */}
-      <div className="px-5 pb-3 flex gap-2 overflow-x-auto scrollbar-none flex-shrink-0">
-        {[{ id: 'all', label: '전체', color: '#9B8E87' }, ...categories].map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setFilter(cat.id)}
-            className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95"
-            style={{
-              background: filter === cat.id ? cat.color : cat.color + '18',
-              color:      filter === cat.id ? '#fff'    : cat.color,
-            }}
-          >
-            {cat.label}
-          </button>
-        ))}
+      <div className="px-5 pb-3 flex gap-2 items-center flex-shrink-0">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none flex-1">
+          {[{ id: 'all', label: '전체', color: '#9B8E87' }, ...categories].map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setFilter(cat.id)}
+              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95"
+              style={{
+                background: filter === cat.id ? cat.color : cat.color + '18',
+                color:      filter === cat.id ? '#fff'    : cat.color,
+              }}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => setShowCatMgr(true)}
+          className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+        >
+          <SlidersHorizontal size={14} className="text-warm-600" />
+        </button>
       </div>
 
       {/* Timeline */}
@@ -143,8 +152,8 @@ export default function Today({ openModal }) {
         </div>
       </div>
 
-      {/* Category Manager modal */}
-      {showCatMgr && <CategoryManager onClose={() => setShowCatMgr(false)} />}
+      {showCatMgr    && <CategoryManager  onClose={() => setShowCatMgr(false)}    />}
+      {showSettings  && <SettingsModal    onClose={() => setShowSettings(false)}  />}
     </div>
   )
 }
