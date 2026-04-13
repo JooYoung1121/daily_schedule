@@ -752,5 +752,18 @@
     "id": "sch_1776087830417_f315",
     "completed": false,
     "createdAt": "2026-04-13T13:43:50.417Z"
+  },
+  {
+    "title": "운동",
+    "date": "2026-04-15",
+    "startTime": "07:00",
+    "endTime": "08:00",
+    "category": "health",
+    "note": "",
+    "repeat": "weekday",
+    "person": "dad",
+    "id": "sch_1776087831436_atpj",
+    "completed": false,
+    "createdAt": "2026-04-13T13:43:51.436Z"
   }
 ]
