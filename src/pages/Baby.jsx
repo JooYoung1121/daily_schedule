@@ -25,6 +25,16 @@ const MILESTONES = [
     tips: ['하루 16~20시간 수면은 정상이에요', '배꼽 소독 꼼꼼히', '황달 증상을 관찰하세요', '수유 후 트림은 필수'],
     feeding: '1.5~3시간 간격 (하루 8~12회)',
     sleep: '하루 16~20시간, 2~4시간 간격 수면',
+    sources: [
+      { label: '아이사랑 포털 — 신생아 성장발달', url: 'https://www.childcare.go.kr/?menuno=288' },
+      { label: '질병관리청 — 영유아 건강검진', url: 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuLv=1&menuCd=115' },
+      { label: '삐뽀삐뽀 119 소아과 (하정훈)', url: 'https://www.kyobobook.co.kr/service/profile/information?chrcCode=1000353101' },
+    ],
+    videos: [
+      { label: '하정훈 — 신생아 초보 부모 필수 가이드', url: 'https://www.youtube.com/results?search_query=하정훈+신생아+돌보기+필수' },
+      { label: '하정훈 — 신생아 수유 총정리', url: 'https://www.youtube.com/results?search_query=하정훈+신생아+수유+모유+분유' },
+      { label: '맘편한소아과 — 신생아 황달 언제 걱정해야 할까', url: 'https://www.youtube.com/results?search_query=맘편한소아과+신생아+황달' },
+    ],
   },
   {
     weekStart: 4, weekEnd: 7, icon: '😊', color: '#D4715A',
@@ -34,6 +44,15 @@ const MILESTONES = [
     tips: ['B형간염 2차 접종 (출생 4주)', '엎드리기 연습(Tummy Time) 하루 2~3분씩', '흑백 패턴 장난감으로 시각 자극'],
     feeding: '모유 2~3시간, 분유 3~4시간 간격',
     sleep: '하루 14~17시간, 밤에 3~4시간 연속 수면 시작',
+    sources: [
+      { label: '아이사랑 포털 — 1~3개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=289' },
+      { label: 'AAP — 1개월 발달 마일스톤', url: 'https://www.healthychildren.org/English/ages-stages/baby/Pages/default.aspx' },
+    ],
+    videos: [
+      { label: '하정훈 — 1개월 아기 궁금한 것 총정리', url: 'https://www.youtube.com/results?search_query=하정훈+1개월+아기+발달' },
+      { label: '키크는소아과 — 터미타임 올바른 방법', url: 'https://www.youtube.com/results?search_query=키크는소아과+터미타임+tummy+time' },
+      { label: '차이의놀이 — 1개월 아기 놀이법', url: 'https://www.youtube.com/results?search_query=차이의놀이+1개월+신생아+놀이' },
+    ],
   },
   {
     weekStart: 8, weekEnd: 11, icon: '🗣️', color: '#C8924A',
@@ -43,6 +62,15 @@ const MILESTONES = [
     tips: ['2개월 국가예방접종 (DTaP·폴리오·Hib·폐렴구균·로타바이러스)', '접종 후 미열 주의 — 해열제 준비', '색깔 있는 장난감으로 자극'],
     feeding: '3~4시간 간격, 1회 100~120ml',
     sleep: '하루 14~16시간, 밤 4~5시간 연속 가능',
+    sources: [
+      { label: '아이사랑 포털 — 1~3개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=289' },
+      { label: '질병관리청 — 2개월 예방접종 안내', url: 'https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuLv=1&menuCd=115' },
+    ],
+    videos: [
+      { label: '하정훈 — 2개월 예방접종 꼭 알아야 할 것', url: 'https://www.youtube.com/results?search_query=하정훈+2개월+예방접종+아기' },
+      { label: '닥터아빠 — 2개월 아기 발달과 주의사항', url: 'https://www.youtube.com/results?search_query=닥터아빠+2개월+아기+발달' },
+      { label: '맘편한소아과 — 예방접종 후 열 나면?', url: 'https://www.youtube.com/results?search_query=맘편한소아과+예방접종+열+해열제' },
+    ],
   },
   {
     weekStart: 12, weekEnd: 15, icon: '🤲', color: '#8B7EC8',
@@ -52,6 +80,17 @@ const MILESTONES = [
     tips: ['엎드리기 연습 하루 5~10분', '딸랑이·소리 나는 장난감 자극', '수면 교육 서서히 시작 가능', '밤 수유 횟수 줄이기 시도'],
     feeding: '3~4시간 간격, 1회 120~150ml',
     sleep: '하루 14~15시간, 밤 6~8시간 연속 가능해지기 시작',
+    sources: [
+      { label: '아이사랑 포털 — 1~3개월 돌보기', url: 'https://www.childcare.go.kr/?menuno=425' },
+      { label: '100일 아기 발달 체크리스트 — 비행테라스', url: 'https://baby.tali.kr/baby-100-day-milestones' },
+      { label: '차이의놀이 — 100일의 기적', url: 'https://www.chaisplay.com/stories/968' },
+    ],
+    videos: [
+      { label: '하정훈 — 100일 아기 수면 교육 방법', url: 'https://www.youtube.com/results?search_query=하정훈+100일+수면교육+아기' },
+      { label: '차이의놀이 — 100일 아기 놀아주기', url: 'https://www.youtube.com/results?search_query=차이의놀이+100일+아기+놀이' },
+      { label: '키크는소아과 — 3개월 목 가누기 체크', url: 'https://www.youtube.com/results?search_query=키크는소아과+3개월+아기+목가누기' },
+      { label: '생후 100일 아기 놀아주기 — 장난감 추천', url: 'https://www.youtube.com/results?search_query=100일+아기+놀아주기+장난감+추천' },
+    ],
   },
   {
     weekStart: 16, weekEnd: 19, icon: '🎯', color: '#5E9E8A',
@@ -61,6 +100,14 @@ const MILESTONES = [
     tips: ['4개월 국가예방접종 (DTaP·폴리오·Hib·폐렴구균·로타바이러스)', '이유식 준비 정보 수집 시작', '소파·침대 낙상 각별히 주의'],
     feeding: '4시간 간격, 1회 150~180ml',
     sleep: '하루 12~15시간, 낮잠 2~3회',
+    sources: [
+      { label: '아이사랑 포털 — 4~6개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=290' },
+    ],
+    videos: [
+      { label: '하정훈 — 4개월 뒤집기와 발달 체크', url: 'https://www.youtube.com/results?search_query=하정훈+4개월+아기+뒤집기+발달' },
+      { label: '맘편한소아과 — 4개월 예방접종 가이드', url: 'https://www.youtube.com/results?search_query=맘편한소아과+4개월+예방접종' },
+      { label: '하정훈 — 이유식 언제 시작할까?', url: 'https://www.youtube.com/results?search_query=하정훈+이유식+시작+시기' },
+    ],
   },
   {
     weekStart: 20, weekEnd: 23, icon: '🙌', color: '#E07B8C',
@@ -70,6 +117,13 @@ const MILESTONES = [
     tips: ['소파·침대 낙상 각별히 주의', '작은 물건 근처에 두지 않기', '이유식 시작 검토 (5~6개월)'],
     feeding: '4~5시간 간격, 1회 150~200ml',
     sleep: '하루 12~14시간, 낮잠 2회',
+    sources: [
+      { label: '아이사랑 포털 — 4~6개월 돌보기', url: 'https://www.childcare.go.kr/?menuno=290' },
+    ],
+    videos: [
+      { label: '하정훈 — 5개월 아기 낯가림 대처법', url: 'https://www.youtube.com/results?search_query=하정훈+5개월+낯가림+아기' },
+      { label: '닥터아빠 — 뒤집기 안 하면 걱정해야 할까?', url: 'https://www.youtube.com/results?search_query=닥터아빠+아기+뒤집기+안할때' },
+    ],
   },
   {
     weekStart: 24, weekEnd: 35, icon: '🥣', color: '#D4715A',
@@ -79,6 +133,16 @@ const MILESTONES = [
     tips: ['6개월 예방접종 (DTaP 3차·B형간염 3차)', '이유식 쌀미음→채소→과일→육류 순서로', '컵으로 물 마시는 연습', '안전문(베이비게이트) 준비'],
     feeding: '이유식 1회 + 수유 4~5회',
     sleep: '하루 12~14시간, 밤잠 안정',
+    sources: [
+      { label: '아이사랑 포털 — 4~6개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=290' },
+      { label: '아이사랑 포털 — 7~9개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=291' },
+    ],
+    videos: [
+      { label: '하정훈 — 이유식 시작 총정리 (쌀미음부터)', url: 'https://www.youtube.com/results?search_query=하정훈+이유식+시작+쌀미음+6개월' },
+      { label: '하정훈 — 6개월 예방접종 안내', url: 'https://www.youtube.com/results?search_query=하정훈+6개월+예방접종' },
+      { label: '차이의놀이 — 6~8개월 아기 놀이', url: 'https://www.youtube.com/results?search_query=차이의놀이+6개월+7개월+아기+놀이' },
+      { label: '맘편한소아과 — 아기 이유식 알레르기 주의', url: 'https://www.youtube.com/results?search_query=맘편한소아과+이유식+알레르기+주의' },
+    ],
   },
   {
     weekStart: 36, weekEnd: 52, icon: '🚀', color: '#5B8DB8',
@@ -88,6 +152,16 @@ const MILESTONES = [
     tips: ['12개월 예방접종 (MMR·수두·A형간염·Hib 4차)', '안전한 공간 확보', '이유식 → 유아식 전환', '첫 돌 준비'],
     feeding: '이유식 3회 + 수유 2~3회',
     sleep: '하루 12~13시간',
+    sources: [
+      { label: '아이사랑 포털 — 7~9개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=291' },
+      { label: '아이사랑 포털 — 10~12개월 성장발달', url: 'https://www.childcare.go.kr/?menuno=292' },
+    ],
+    videos: [
+      { label: '하정훈 — 돌 전 아기 발달 체크리스트', url: 'https://www.youtube.com/results?search_query=하정훈+돌전+아기+발달+체크' },
+      { label: '하정훈 — 12개월 예방접종 총정리', url: 'https://www.youtube.com/results?search_query=하정훈+12개월+예방접종+MMR' },
+      { label: '키크는소아과 — 아기 걷기 시작, 언제 걱정?', url: 'https://www.youtube.com/results?search_query=키크는소아과+아기+걷기+시작+언제' },
+      { label: '차이의놀이 — 9~12개월 발달 놀이', url: 'https://www.youtube.com/results?search_query=차이의놀이+9개월+10개월+11개월+놀이' },
+    ],
   },
 ]
 
@@ -266,7 +340,7 @@ export default function Baby() {
           </div>
 
           {/* Feeding & Sleep */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 mb-3">
             <div className="bg-warm-100 rounded-xl p-2.5">
               <p className="text-[10px] font-bold text-warm-400 mb-1">🍼 수유</p>
               <p className="text-[11px] text-warm-700 leading-relaxed">{milestone.feeding}</p>
@@ -276,11 +350,63 @@ export default function Baby() {
               <p className="text-[11px] text-warm-700 leading-relaxed">{milestone.sleep}</p>
             </div>
           </div>
+
+          {/* YouTube videos */}
+          {milestone.videos && milestone.videos.length > 0 && (
+            <div className="mb-3">
+              <p className="text-[11px] font-bold text-warm-400 uppercase tracking-wide mb-2">▶ 추천 영상</p>
+              <div className="space-y-1.5">
+                {milestone.videos.map((v, i) => (
+                  <a
+                    key={i}
+                    href={v.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 bg-warm-100 rounded-lg px-2.5 py-2 active:bg-warm-200 transition-colors"
+                  >
+                    <span className="text-[12px] flex-shrink-0">▶</span>
+                    <p className="text-[11px] text-warm-700 flex-1 leading-snug">{v.label}</p>
+                    <span className="text-[10px] text-warm-400 flex-shrink-0">→</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sources */}
+          {milestone.sources && milestone.sources.length > 0 && (
+            <div className="border-t border-warm-200/60 pt-2.5">
+              <p className="text-[10px] font-bold text-warm-300 uppercase tracking-wide mb-1.5">📎 출처·참고자료</p>
+              <div className="space-y-1">
+                {milestone.sources.map((s, i) => (
+                  <a
+                    key={i}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-[10px] text-warm-400 hover:text-warm-600 underline decoration-warm-200 underline-offset-2 leading-relaxed"
+                  >
+                    {s.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Vaccination schedule */}
         <div className="bg-warm-50 rounded-2xl p-4 shadow-warm-sm border border-warm-200/40">
-          <h3 className="text-[14px] font-bold text-warm-900 mb-3">💉 예방접종 일정</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[14px] font-bold text-warm-900">💉 예방접종 일정</h3>
+            <a
+              href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuLv=1&menuCd=115"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-warm-400 underline underline-offset-2"
+            >
+              질병관리청 기준
+            </a>
+          </div>
           <div className="space-y-2">
             {VACCINATIONS.map((v, i) => {
               const isPast    = age.totalDays > v.days + 21
