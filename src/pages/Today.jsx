@@ -22,13 +22,14 @@ export default function Today({ openModal }) {
   const [nowTop,     setNowTop]     = useState(currentTimeTop())
   const [filter,     setFilter]     = useState('all')
   const [showCatMgr,  setShowCatMgr]  = useState(false)
-  const [personFilter, setPersonFilter] = useState('all')
+  const [personFilter, setPersonFilter] = useState('everyone')
   const timelineRef = useRef(null)
 
   const PERSON_TABS = [
-    { value: 'all', label: '공통', emoji: '👫' },
-    { value: 'mom', label: '엄마', emoji: '👩' },
-    { value: 'dad', label: '아빠', emoji: '👨' },
+    { value: 'everyone', label: '전체',  emoji: '👥' },
+    { value: 'all',      label: '공통',  emoji: '👫' },
+    { value: 'mom',      label: '엄마', emoji: '👩' },
+    { value: 'dad',      label: '아빠', emoji: '👨' },
   ]
 
   useEffect(() => {
@@ -47,8 +48,9 @@ export default function Today({ openModal }) {
 
   const sorted = [...displayed].sort((a, b) => a.startTime.localeCompare(b.startTime))
 
-  // Right timeline: strict filter per person tab
+  // Right timeline: filter per person tab
   const timelineBlocks = displayed.filter(s => {
+    if (personFilter === 'everyone') return true
     if (personFilter === 'all') return !s.person || s.person === 'all'
     return s.person === personFilter
   })
@@ -63,7 +65,7 @@ export default function Today({ openModal }) {
     openModal({
       defaultDate: todayStr,
       defaultStartTime: snapToTime(y),
-      defaultPerson: personFilter !== 'all' ? personFilter : 'all',
+      defaultPerson: (personFilter === 'mom' || personFilter === 'dad') ? personFilter : 'all',
     })
   }
 
@@ -233,14 +235,22 @@ export default function Today({ openModal }) {
                 </div>
               )}
 
-              {timelineBlocks.map(s => (
-                <StructuredBlock
-                  key={s.id}
-                  schedule={s}
-                  onToggle={() => toggleComplete(s)}
-                  onEdit={() => openModal({ schedule: s })}
-                />
-              ))}
+              {timelineBlocks.map(s => {
+                let position = 'full'
+                if (personFilter === 'everyone') {
+                  if (s.person === 'mom') position = 'left'
+                  else if (s.person === 'dad') position = 'right'
+                }
+                return (
+                  <StructuredBlock
+                    key={s.id}
+                    schedule={s}
+                    position={position}
+                    onToggle={() => toggleComplete(s)}
+                    onEdit={() => openModal({ schedule: s })}
+                  />
+                )
+              })}
             </div>
           </div>
           </div>
