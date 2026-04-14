@@ -1,10 +1,5 @@
 [
   {
-    "id": "personal",
-    "label": "개인",
-    "color": "#D4715A"
-  },
-  {
     "id": "health",
     "label": "건강",
     "color": "#C8924A"
