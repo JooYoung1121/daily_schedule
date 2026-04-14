@@ -27,7 +27,7 @@ function addMinutes(time, mins) {
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
 }
 
-export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, onClose }) {
+export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, defaultPerson, onClose }) {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
     updateScheduleGroup, deleteScheduleGroup, convertToRepeating,
@@ -50,7 +50,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
     category:   schedule?.category   ?? firstCatId,
     note:       schedule?.note       ?? '',
     repeat:     schedule?.repeat     ?? 'none',
-    person:     schedule?.person     ?? 'all',
+    person:     schedule?.person     ?? defaultPerson ?? 'all',
     repeatDays: schedule?.repeatDays ?? [],
   })
   const [saving,   setSaving]   = useState(false)

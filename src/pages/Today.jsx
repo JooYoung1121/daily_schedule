@@ -58,9 +58,12 @@ export default function Today({ openModal }) {
   function handleGridTap(e) {
     if (e.target !== e.currentTarget) return
     const rect = e.currentTarget.getBoundingClientRect()
-    // rect.top already accounts for scroll — grid is full TOTAL_H height inside scroll container
     const y = e.clientY - rect.top
-    openModal({ defaultDate: todayStr, defaultStartTime: snapToTime(y) })
+    openModal({
+      defaultDate: todayStr,
+      defaultStartTime: snapToTime(y),
+      defaultPerson: personFilter !== 'all' ? personFilter : 'all',
+    })
   }
 
   return (

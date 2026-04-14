@@ -39,13 +39,13 @@ function SyncBar() {
 function AppRoutes() {
   const location = useLocation()
   const [modal, setModal] = useState({
-    open: false, schedule: null, defaultDate: null, defaultStartTime: null,
+    open: false, schedule: null, defaultDate: null, defaultStartTime: null, defaultPerson: null,
   })
 
   const openModal  = (opts = {}) =>
-    setModal({ open: true, schedule: null, defaultDate: null, defaultStartTime: null, ...opts })
+    setModal({ open: true, schedule: null, defaultDate: null, defaultStartTime: null, defaultPerson: null, ...opts })
   const closeModal = () =>
-    setModal({ open: false, schedule: null, defaultDate: null, defaultStartTime: null })
+    setModal({ open: false, schedule: null, defaultDate: null, defaultStartTime: null, defaultPerson: null })
 
   const showFloatingBtn = ['/', '/week'].includes(location.pathname)
 
@@ -79,6 +79,7 @@ function AppRoutes() {
           schedule={modal.schedule}
           defaultDate={modal.defaultDate}
           defaultStartTime={modal.defaultStartTime}
+          defaultPerson={modal.defaultPerson}
           onClose={closeModal}
         />
       )}
