@@ -1,15 +1,5 @@
 [
   {
-    "id": "work",
-    "label": "업무",
-    "color": "#5E9E8A"
-  },
-  {
-    "id": "personal",
-    "label": "개인",
-    "color": "#D4715A"
-  },
-  {
     "id": "health",
     "label": "건강",
     "color": "#C8924A"
