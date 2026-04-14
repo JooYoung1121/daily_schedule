@@ -1517,19 +1517,5 @@
     "repeatGroupId": "rpt_1776126692671_hh3s9x",
     "completed": false,
     "createdAt": "2026-04-14T00:31:32.671Z"
-  },
-  {
-    "title": "테스트",
-    "date": "2026-04-14",
-    "startTime": "07:00",
-    "endTime": "07:10",
-    "category": "health",
-    "note": "",
-    "repeat": "none",
-    "person": "mom",
-    "repeatDays": [],
-    "id": "sch_1776149870039_ls4pk0",
-    "completed": false,
-    "createdAt": "2026-04-14T06:57:50.039Z"
   }
 ]
