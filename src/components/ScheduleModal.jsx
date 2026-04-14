@@ -30,7 +30,7 @@ function addMinutes(time, mins) {
 export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, onClose }) {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
-    updateScheduleGroup, deleteScheduleGroup,
+    updateScheduleGroup, deleteScheduleGroup, convertToRepeating,
   } = useScheduleMutations()
   const { categories, getCategory, addCategory } = useCategories()
   const isEdit   = !!(schedule?.id)
@@ -150,7 +150,12 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
     setSaving(true)
     try {
       if (isEdit) {
-        if (hasGroup && applyToGroup) {
+        // Case: edit single schedule → now wants to make it repeating
+        const wantsRepeat = form.repeat !== 'none' && !hasGroup
+        if (wantsRepeat) {
+          const dates = getRepeatDates(form.date, form.repeat, form.repeatDays)
+          await convertToRepeating(schedule.id, form, dates)
+        } else if (hasGroup && applyToGroup) {
           await updateScheduleGroup(schedule.repeatGroupId, form)
         } else {
           await updateSchedule(schedule.id, form)
@@ -409,8 +414,8 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
             </div>
           </Row>
 
-          {/* Repeat */}
-          {!isEdit && (
+          {/* Repeat — show for new schedules OR editing non-grouped schedules */}
+          {(!isEdit || (isEdit && !hasGroup)) && (
             <Row label="반복" align="start">
               <div className="flex-1">
                 <button

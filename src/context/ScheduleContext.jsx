@@ -114,6 +114,29 @@ export function ScheduleProvider({ children }) {
     await persist(next)
   }, [])
 
+  // Convert single schedule → repeating group (one persist)
+  const convertToRepeating = useCallback(async (scheduleId, form, additionalDates) => {
+    const groupId = `rpt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    const current = stateRef.current.schedules
+
+    // Update original with form + groupId
+    const updated = current.map(s =>
+      s.id === scheduleId ? { ...s, ...form, repeatGroupId: groupId } : s
+    )
+
+    // Create new instances for additional dates
+    const newItems = additionalDates.map((date, i) => ({
+      ...form,
+      date,
+      id:            `sch_${Date.now() + i + 1}_${Math.random().toString(36).slice(2, 8)}`,
+      repeatGroupId: groupId,
+      completed:     false,
+      createdAt:     new Date().toISOString(),
+    }))
+
+    await persist([...updated, ...newItems])
+  }, [])
+
   const deleteScheduleGroup = useCallback(async (groupId) => {
     const next = stateRef.current.schedules.filter(s => s.repeatGroupId !== groupId)
     await persist(next)
@@ -129,7 +152,7 @@ export function ScheduleProvider({ children }) {
     <Ctx.Provider value={{
       schedules, loading, syncing, syncError,
       addSchedule, addSchedules, updateSchedule, deleteSchedule,
-      updateScheduleGroup, deleteScheduleGroup, toggleComplete, reload,
+      updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete, reload,
     }}>
       {children}
     </Ctx.Provider>
@@ -155,11 +178,11 @@ export function useWeekSchedules(dates) {
 export function useScheduleMutations() {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
-    updateScheduleGroup, deleteScheduleGroup, toggleComplete,
+    updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete,
   } = useContext(Ctx)
   return {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
-    updateScheduleGroup, deleteScheduleGroup, toggleComplete,
+    updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete,
   }
 }
 
