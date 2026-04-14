@@ -4649,5 +4649,19 @@
     "repeatGroupId": "rpt_1776151412535_sd5rah",
     "completed": false,
     "createdAt": "2026-04-14T07:23:32.536Z"
+  },
+  {
+    "title": "with 함이",
+    "date": "2026-04-14",
+    "startTime": "13:00",
+    "endTime": "15:00",
+    "category": "cat_1776044723273",
+    "note": "",
+    "repeat": "none",
+    "person": "mom",
+    "repeatDays": [],
+    "id": "sch_1776151452009_4frspz",
+    "completed": false,
+    "createdAt": "2026-04-14T07:24:12.009Z"
   }
 ]
