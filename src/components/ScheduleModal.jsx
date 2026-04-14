@@ -28,7 +28,10 @@ function addMinutes(time, mins) {
 }
 
 export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, onClose }) {
-  const { addSchedule, addSchedules, updateSchedule, deleteSchedule } = useScheduleMutations()
+  const {
+    addSchedule, addSchedules, updateSchedule, deleteSchedule,
+    updateScheduleGroup, deleteScheduleGroup,
+  } = useScheduleMutations()
   const { categories, getCategory, addCategory } = useCategories()
   const isEdit   = !!(schedule?.id)
   const titleRef = useRef(null)
@@ -58,6 +61,9 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   const [showAddCat, setShowAddCat] = useState(false)
   const [newCatLabel, setNewCatLabel] = useState('')
   const [newCatColor, setNewCatColor] = useState('#5E9E8A')
+  const [applyToGroup, setApplyToGroup] = useState(false)
+
+  const hasGroup = !!(schedule?.repeatGroupId)
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }))
 
@@ -141,7 +147,11 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
     setSaving(true)
     try {
       if (isEdit) {
-        await updateSchedule(schedule.id, form)
+        if (hasGroup && applyToGroup) {
+          await updateScheduleGroup(schedule.repeatGroupId, form)
+        } else {
+          await updateSchedule(schedule.id, form)
+        }
       } else {
         // Collect all dates (main + repeats) and batch-save in ONE persist
         const allDates = [form.date]
@@ -158,10 +168,17 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   }
 
   async function handleDelete() {
-    if (!window.confirm('이 일정을 삭제할까요?') || deleting) return
+    const msg = hasGroup && applyToGroup
+      ? '반복 일정 전체를 삭제할까요?'
+      : '이 일정을 삭제할까요?'
+    if (!window.confirm(msg) || deleting) return
     setDeleting(true)
     try {
-      await deleteSchedule(schedule.id)
+      if (hasGroup && applyToGroup) {
+        await deleteScheduleGroup(schedule.repeatGroupId)
+      } else {
+        await deleteSchedule(schedule.id)
+      }
       onClose()
     } finally {
       setDeleting(false)
@@ -211,6 +228,37 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
             className="w-full text-[18px] font-bold bg-transparent border-b-2 border-warm-200
                        focus:border-terra pb-2 outline-none text-warm-900 placeholder-warm-300 transition-colors"
           />
+
+          {/* Group toggle (only for repeat schedules in edit mode) */}
+          {isEdit && hasGroup && (
+            <div className="flex items-center gap-2 bg-warm-100 rounded-xl px-3.5 py-2.5">
+              <RefreshCw size={13} className="text-warm-500 flex-shrink-0" />
+              <span className="text-[13px] text-warm-500 flex-1">반복 일정</span>
+              <div className="flex gap-1.5 bg-warm-200 rounded-lg p-0.5">
+                <button
+                  onClick={() => setApplyToGroup(false)}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all"
+                  style={{
+                    background: !applyToGroup ? '#fff' : 'transparent',
+                    color:      !applyToGroup ? '#3D302B' : '#8A7B72',
+                    boxShadow:  !applyToGroup ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                  }}
+                >
+                  이것만
+                </button>
+                <button
+                  onClick={() => setApplyToGroup(true)}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all"
+                  style={{
+                    background: applyToGroup ? '#D4715A' : 'transparent',
+                    color:      applyToGroup ? '#fff'    : '#8A7B72',
+                  }}
+                >
+                  전체
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Date */}
           <Row label="날짜">

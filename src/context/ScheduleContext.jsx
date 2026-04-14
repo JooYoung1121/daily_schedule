@@ -82,11 +82,15 @@ export function ScheduleProvider({ children }) {
 
   // Batch add — single persist for multiple schedules (repeat 등)
   const addSchedules = useCallback(async (dataList) => {
+    const groupId = dataList.length > 1
+      ? `rpt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+      : undefined
     const items = dataList.map((data, i) => ({
       ...data,
-      id:        `sch_${Date.now() + i}_${Math.random().toString(36).slice(2, 8)}`,
-      completed: false,
-      createdAt: new Date().toISOString(),
+      id:            `sch_${Date.now() + i}_${Math.random().toString(36).slice(2, 8)}`,
+      repeatGroupId: groupId,
+      completed:     false,
+      createdAt:     new Date().toISOString(),
     }))
     await persist([...stateRef.current.schedules, ...items])
   }, [])
@@ -101,6 +105,20 @@ export function ScheduleProvider({ children }) {
     await persist(next)
   }, [])
 
+  // Group operations for repeat schedules
+  const updateScheduleGroup = useCallback(async (groupId, updates) => {
+    // Update all in group but keep each schedule's own date
+    const next = stateRef.current.schedules.map(s =>
+      s.repeatGroupId === groupId ? { ...s, ...updates, date: s.date } : s
+    )
+    await persist(next)
+  }, [])
+
+  const deleteScheduleGroup = useCallback(async (groupId) => {
+    const next = stateRef.current.schedules.filter(s => s.repeatGroupId !== groupId)
+    await persist(next)
+  }, [])
+
   const toggleComplete = useCallback(async (schedule) => {
     await updateSchedule(schedule.id, { completed: !schedule.completed })
   }, [updateSchedule])
@@ -110,7 +128,8 @@ export function ScheduleProvider({ children }) {
   return (
     <Ctx.Provider value={{
       schedules, loading, syncing, syncError,
-      addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete, reload,
+      addSchedule, addSchedules, updateSchedule, deleteSchedule,
+      updateScheduleGroup, deleteScheduleGroup, toggleComplete, reload,
     }}>
       {children}
     </Ctx.Provider>
@@ -134,8 +153,14 @@ export function useWeekSchedules(dates) {
 }
 
 export function useScheduleMutations() {
-  const { addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete } = useContext(Ctx)
-  return { addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete }
+  const {
+    addSchedule, addSchedules, updateSchedule, deleteSchedule,
+    updateScheduleGroup, deleteScheduleGroup, toggleComplete,
+  } = useContext(Ctx)
+  return {
+    addSchedule, addSchedules, updateSchedule, deleteSchedule,
+    updateScheduleGroup, deleteScheduleGroup, toggleComplete,
+  }
 }
 
 export function useSyncStatus() {
