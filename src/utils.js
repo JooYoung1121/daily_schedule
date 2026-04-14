@@ -83,10 +83,10 @@ export function currentTimeTop() {
   return pos
 }
 
-/** Snap a pixel offset to the nearest 15-minute slot, return HH:MM */
+/** Snap a pixel offset to the nearest 30-minute slot, return HH:MM */
 export function snapToTime(px) {
   const raw    = px / HOUR_HEIGHT + DAY_START       // fractional hour
-  const mins   = Math.round(raw * 60 / 15) * 15    // snap to 15 min
+  const mins   = Math.round(raw * 60 / 30) * 30    // snap to 30 min
   const hour   = Math.min(Math.max(Math.floor(mins / 60), DAY_START), DAY_END - 1)
   const minute = mins % 60
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
