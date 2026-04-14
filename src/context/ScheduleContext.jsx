@@ -7,16 +7,14 @@ const Ctx = createContext(null)
 export function ScheduleProvider({ children }) {
   const [schedules, setSchedules] = useState([])
   const [loading,   setLoading]   = useState(true)
-  const [syncing,   setSyncing]   = useState(false)   // true while PUT is in-flight
+  const [syncing,   setSyncing]   = useState(false)
   const [syncError, setSyncError] = useState(null)
 
-  // Keep a ref so mutation callbacks always see fresh values without re-creating
-  const stateRef = useRef({ schedules: [], sha: null })
+  const stateRef  = useRef({ schedules: [], sha: null })
+  const saveQueue = useRef(Promise.resolve()) // serialize saves
 
   // ─── Initial load ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    loadFromGitHub()
-  }, [])
+  useEffect(() => { loadFromGitHub() }, [])
 
   async function loadFromGitHub() {
     setLoading(true)
@@ -32,28 +30,42 @@ export function ScheduleProvider({ children }) {
     }
   }
 
-  // ─── Persist helper (optimistic update + GitHub PUT) ─────────────────────
-  async function persist(newSchedules) {
-    const prevSchedules = stateRef.current.schedules
-    const prevSha       = stateRef.current.sha
+  // ─── Persist helper (serialized + SHA conflict retry) ─────────────────────
+  function persist(newSchedules) {
+    // Chain saves so they never run concurrently
+    const job = saveQueue.current.then(async () => {
+      const prevSchedules = stateRef.current.schedules
+      const prevSha       = stateRef.current.sha
 
-    // Optimistic: update UI immediately
-    stateRef.current.schedules = newSchedules
-    setSchedules(newSchedules)
-    setSyncing(true)
-    setSyncError(null)
+      stateRef.current.schedules = newSchedules
+      setSchedules(newSchedules)
+      setSyncing(true)
+      setSyncError(null)
 
-    try {
-      const newSha = await saveSchedules(newSchedules, prevSha)
-      stateRef.current.sha = newSha
-    } catch (err) {
-      // Rollback on failure
-      stateRef.current = { schedules: prevSchedules, sha: prevSha }
-      setSchedules(prevSchedules)
-      setSyncError(err.message)
-    } finally {
-      setSyncing(false)
-    }
+      try {
+        const newSha = await saveSchedules(newSchedules, prevSha)
+        stateRef.current.sha = newSha
+      } catch (err) {
+        // SHA conflict → fetch fresh SHA and retry once
+        if (err.message && err.message.includes('does not match')) {
+          try {
+            const { sha: freshSha } = await fetchSchedules()
+            const newSha = await saveSchedules(newSchedules, freshSha)
+            stateRef.current.sha = newSha
+            return // retry succeeded
+          } catch {
+            // retry also failed → rollback
+          }
+        }
+        stateRef.current = { schedules: prevSchedules, sha: prevSha }
+        setSchedules(prevSchedules)
+        setSyncError(err.message)
+      } finally {
+        setSyncing(false)
+      }
+    })
+    saveQueue.current = job
+    return job
   }
 
   // ─── Mutations ─────────────────────────────────────────────────────────────
@@ -61,11 +73,22 @@ export function ScheduleProvider({ children }) {
   const addSchedule = useCallback(async (data) => {
     const item = {
       ...data,
-      id:        `sch_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      id:        `sch_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       completed: false,
       createdAt: new Date().toISOString(),
     }
     await persist([...stateRef.current.schedules, item])
+  }, [])
+
+  // Batch add — single persist for multiple schedules (repeat 등)
+  const addSchedules = useCallback(async (dataList) => {
+    const items = dataList.map((data, i) => ({
+      ...data,
+      id:        `sch_${Date.now() + i}_${Math.random().toString(36).slice(2, 8)}`,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    }))
+    await persist([...stateRef.current.schedules, ...items])
   }, [])
 
   const updateSchedule = useCallback(async (id, updates) => {
@@ -87,7 +110,7 @@ export function ScheduleProvider({ children }) {
   return (
     <Ctx.Provider value={{
       schedules, loading, syncing, syncError,
-      addSchedule, updateSchedule, deleteSchedule, toggleComplete, reload,
+      addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete, reload,
     }}>
       {children}
     </Ctx.Provider>
@@ -111,8 +134,8 @@ export function useWeekSchedules(dates) {
 }
 
 export function useScheduleMutations() {
-  const { addSchedule, updateSchedule, deleteSchedule, toggleComplete } = useContext(Ctx)
-  return { addSchedule, updateSchedule, deleteSchedule, toggleComplete }
+  const { addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete } = useContext(Ctx)
+  return { addSchedule, addSchedules, updateSchedule, deleteSchedule, toggleComplete }
 }
 
 export function useSyncStatus() {

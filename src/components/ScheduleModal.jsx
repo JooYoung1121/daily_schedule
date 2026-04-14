@@ -15,41 +15,73 @@ const REPEAT_OPTIONS = [
   { value: 'weekday', label: '주중 (월~금)' },
   { value: 'weekly',  label: '매주 같은 요일' },
   { value: 'monthly', label: '매월 같은 날' },
+  { value: 'custom',  label: '요일 선택' },
 ]
 
+const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
+
+// Add minutes to HH:MM time string
+function addMinutes(time, mins) {
+  const [h, m] = time.split(':').map(Number)
+  const total  = Math.min(h * 60 + m + mins, 23 * 60 + 59)
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
+
 export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, onClose }) {
-  const { addSchedule, updateSchedule, deleteSchedule } = useScheduleMutations()
+  const { addSchedule, addSchedules, updateSchedule, deleteSchedule } = useScheduleMutations()
   const { categories, getCategory, addCategory } = useCategories()
   const isEdit   = !!(schedule?.id)
   const titleRef = useRef(null)
 
-  const todayStr   = formatDate(new Date())
-  const defaultEnd = (() => {
-    if (!defaultStartTime) return '10:00'
-    const [h, m] = defaultStartTime.split(':').map(Number)
-    return `${String(Math.min(h + 1, 23)).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-  })()
+  const todayStr    = formatDate(new Date())
+  const startFallback = defaultStartTime ?? '09:00'
+  const DEFAULT_DURATION = 10 // minutes
 
   const firstCatId = categories[0]?.id ?? 'work'
 
   const [form, setForm] = useState({
-    title:     schedule?.title     ?? '',
-    date:      schedule?.date      ?? defaultDate ?? todayStr,
-    startTime: schedule?.startTime ?? defaultStartTime ?? '09:00',
-    endTime:   schedule?.endTime   ?? defaultEnd,
-    category:  schedule?.category  ?? firstCatId,
-    note:      schedule?.note      ?? '',
-    repeat:    schedule?.repeat    ?? 'none',
-    person:    schedule?.person    ?? 'all',
+    title:      schedule?.title      ?? '',
+    date:       schedule?.date       ?? defaultDate ?? todayStr,
+    startTime:  schedule?.startTime  ?? startFallback,
+    endTime:    schedule?.endTime    ?? addMinutes(startFallback, DEFAULT_DURATION),
+    category:   schedule?.category   ?? firstCatId,
+    note:       schedule?.note       ?? '',
+    repeat:     schedule?.repeat     ?? 'none',
+    person:     schedule?.person     ?? 'all',
+    repeatDays: schedule?.repeatDays ?? [],
   })
   const [saving,   setSaving]   = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [showRepeat, setShowRepeat] = useState(!!(schedule?.repeat && schedule.repeat !== 'none'))
+  const [showRepeat, setShowRepeat] = useState(
+    !!(schedule?.repeat && schedule.repeat !== 'none')
+  )
   const [showAddCat, setShowAddCat] = useState(false)
   const [newCatLabel, setNewCatLabel] = useState('')
   const [newCatColor, setNewCatColor] = useState('#5E9E8A')
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }))
+
+  // Auto-adjust endTime when startTime changes (keep duration, min 10 min)
+  function handleStartTimeChange(newStart) {
+    const [oh, om] = form.startTime.split(':').map(Number)
+    const [eh, em] = form.endTime.split(':').map(Number)
+    const duration = Math.max((eh * 60 + em) - (oh * 60 + om), DEFAULT_DURATION)
+    setForm(prev => ({
+      ...prev,
+      startTime: newStart,
+      endTime: addMinutes(newStart, duration),
+    }))
+  }
+
+  // Ensure endTime > startTime when endTime changes
+  function handleEndTimeChange(newEnd) {
+    const [sh, sm] = form.startTime.split(':').map(Number)
+    const [eh, em] = newEnd.split(':').map(Number)
+    if (eh * 60 + em <= sh * 60 + sm) {
+      newEnd = addMinutes(form.startTime, DEFAULT_DURATION)
+    }
+    set('endTime', newEnd)
+  }
 
   async function handleAddCat() {
     if (!newCatLabel.trim()) return
@@ -66,10 +98,23 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   }, [])
 
   // Generate repeated schedule dates
-  function getRepeatDates(startDate, repeat, count = 30) {
+  function getRepeatDates(startDate, repeat, repeatDays = []) {
     const dates = []
     const base  = new Date(startDate)
-    for (let i = 1; i <= count; i++) {
+
+    if (repeat === 'custom' && repeatDays.length > 0) {
+      let cursor = new Date(base)
+      while (dates.length < 30) {
+        cursor.setDate(cursor.getDate() + 1)
+        if (repeatDays.includes(cursor.getDay())) {
+          dates.push(formatDate(cursor))
+        }
+        if (cursor - base > 365 * 24 * 60 * 60 * 1000) break
+      }
+      return dates
+    }
+
+    for (let i = 1; i <= 30; i++) {
       const d = new Date(base)
       if (repeat === 'daily') {
         d.setDate(base.getDate() + i)
@@ -98,15 +143,13 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
       if (isEdit) {
         await updateSchedule(schedule.id, form)
       } else {
-        // Add main schedule
-        await addSchedule(form)
-        // Add repeated instances
+        // Collect all dates (main + repeats) and batch-save in ONE persist
+        const allDates = [form.date]
         if (form.repeat !== 'none') {
-          const dates = getRepeatDates(form.date, form.repeat)
-          for (const date of dates) {
-            await addSchedule({ ...form, date, repeat: form.repeat })
-          }
+          allDates.push(...getRepeatDates(form.date, form.repeat, form.repeatDays))
         }
+        const items = allDates.map(date => ({ ...form, date }))
+        await addSchedules(items)
       }
       onClose()
     } finally {
@@ -128,6 +171,12 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   function handleKeyDown(e) {
     if (e.key === 'Escape') onClose()
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSave()
+  }
+
+  function toggleRepeatDay(day) {
+    const days = form.repeatDays || []
+    const next = days.includes(day) ? days.filter(d => d !== day) : [...days, day]
+    set('repeatDays', next)
   }
 
   const selectedCat = getCategory(form.category)
@@ -171,10 +220,12 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
 
           {/* Time */}
           <Row label="시간">
-            <input type="time" value={form.startTime} onChange={e => set('startTime', e.target.value)}
+            <input type="time" value={form.startTime}
+              onChange={e => handleStartTimeChange(e.target.value)}
               className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none" />
             <span className="text-warm-400 font-medium text-sm">–</span>
-            <input type="time" value={form.endTime} onChange={e => set('endTime', e.target.value)}
+            <input type="time" value={form.endTime}
+              onChange={e => handleEndTimeChange(e.target.value)}
               className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none" />
           </Row>
 
@@ -274,15 +325,21 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
 
           {/* Repeat */}
           {!isEdit && (
-            <Row label="반복">
+            <Row label="반복" align="start">
               <div className="flex-1">
                 <button
-                  onClick={() => setShowRepeat(v => !v)}
+                  onClick={() => {
+                    if (showRepeat) { set('repeat', 'none'); set('repeatDays', []) }
+                    setShowRepeat(v => !v)
+                  }}
                   className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-[13px] font-semibold transition-all
                     ${showRepeat ? 'bg-terra/15 text-terra' : 'bg-warm-100 text-warm-500'}`}
                 >
                   <RefreshCw size={13} />
-                  {showRepeat ? REPEAT_OPTIONS.find(o => o.value === form.repeat)?.label ?? '반복 설정' : '반복 없음'}
+                  {showRepeat
+                    ? REPEAT_OPTIONS.find(o => o.value === form.repeat)?.label ?? '반복 설정'
+                    : '반복 없음'
+                  }
                 </button>
                 {showRepeat && (
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -301,9 +358,32 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                     ))}
                   </div>
                 )}
+
+                {/* Custom day picker */}
+                {showRepeat && form.repeat === 'custom' && (
+                  <div className="mt-2.5 flex gap-1.5">
+                    {WEEKDAY_LABELS.map((label, i) => (
+                      <button
+                        key={i}
+                        onClick={() => toggleRepeatDay(i)}
+                        className="w-9 h-9 rounded-full text-[12px] font-bold transition-all active:scale-90"
+                        style={{
+                          background: (form.repeatDays || []).includes(i) ? '#D4715A' : '#F0EAE4',
+                          color:      (form.repeatDays || []).includes(i) ? '#fff'    : '#8A7B72',
+                        }}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {showRepeat && form.repeat !== 'none' && (
                   <p className="text-xs text-warm-400 mt-1.5">
-                    오늘부터 30회 반복 생성돼요
+                    {form.repeat === 'custom' && (form.repeatDays || []).length === 0
+                      ? '반복할 요일을 선택하세요'
+                      : '오늘부터 30회 반복 생성돼요'
+                    }
                   </p>
                 )}
               </div>
@@ -330,7 +410,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
             )}
             <button
               onClick={handleSave}
-              disabled={!form.title.trim() || saving}
+              disabled={!form.title.trim() || saving || (form.repeat === 'custom' && (form.repeatDays || []).length === 0 && showRepeat)}
               className="flex-1 py-3.5 rounded-2xl font-bold text-white text-[15px] transition-all active:brightness-90 disabled:opacity-40"
               style={{ background: selectedCat.color }}
             >
