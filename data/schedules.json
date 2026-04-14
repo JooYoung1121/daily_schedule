@@ -1982,5 +1982,19 @@
     "repeatGroupId": "rpt_1776150033960_uzk67u",
     "completed": false,
     "createdAt": "2026-04-14T07:00:33.961Z"
+  },
+  {
+    "title": "함이 보기",
+    "date": "2026-04-14",
+    "startTime": "08:00",
+    "endTime": "10:00",
+    "category": "cat_1776044723273",
+    "note": "먹고 자고 싸고",
+    "repeat": "none",
+    "person": "all",
+    "repeatDays": [],
+    "id": "sch_1776150079179_j96cx4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:01:19.179Z"
   }
 ]
