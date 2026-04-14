@@ -11,8 +11,15 @@ import { useCategories } from '../context/CategoryContext'
 const HOURS   = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START + i)
 const TOTAL_H = (DAY_END - DAY_START) * HOUR_HEIGHT
 
+const PERSON_TABS = [
+  { value: 'all', label: '전체', emoji: '👫' },
+  { value: 'mom', label: '엄마', emoji: '👩' },
+  { value: 'dad', label: '아빠', emoji: '👨' },
+]
+
 export default function Week({ openModal }) {
   const [base, setBase] = useState(new Date())
+  const [personFilter, setPersonFilter] = useState('all')
   const weekDates    = getWeekDates(base)
   const weekDateStrs = weekDates.map(formatDate)
   const { schedules } = useWeekSchedules(weekDateStrs)
@@ -22,6 +29,10 @@ export default function Week({ openModal }) {
 
   const prevWeek = () => { const d = new Date(base); d.setDate(d.getDate() - 7); setBase(d) }
   const nextWeek = () => { const d = new Date(base); d.setDate(d.getDate() + 7); setBase(d) }
+
+  const filtered = personFilter === 'all'
+    ? schedules
+    : schedules.filter(s => s.person === personFilter)
 
   const monthLabel = (() => {
     const m0 = weekDates[0].getMonth() + 1
@@ -43,6 +54,23 @@ export default function Week({ openModal }) {
             <ChevronRight size={18} className="text-warm-700" />
           </button>
         </div>
+      </div>
+
+      {/* Person filter */}
+      <div className="flex gap-1.5 px-5 pb-2 flex-shrink-0">
+        {PERSON_TABS.map(p => (
+          <button
+            key={p.value}
+            onClick={() => setPersonFilter(p.value)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
+            style={{
+              background: personFilter === p.value ? '#D4715A' : '#F0EAE4',
+              color:      personFilter === p.value ? '#fff'    : '#8A7B72',
+            }}
+          >
+            <span>{p.emoji}</span>{p.label}
+          </button>
+        ))}
       </div>
 
       {/* Day headers */}
@@ -76,7 +104,7 @@ export default function Week({ openModal }) {
           {weekDates.map((date, dayIdx) => {
             const ds        = formatDate(date)
             const isToday   = ds === todayStr
-            const dayScheds = schedules.filter(s => s.date === ds)
+            const dayScheds = filtered.filter(s => s.date === ds)
               .sort((a, b) => a.startTime.localeCompare(b.startTime))
 
             return (
@@ -98,9 +126,13 @@ export default function Week({ openModal }) {
                       style={{ top, height: h, backgroundColor: cat.color + '20', borderLeft: `2.5px solid ${cat.color}`, opacity: s.completed ? 0.45 : 1 }}
                       onClick={() => openModal({ schedule: s })}
                     >
-                      <p className="text-[10px] font-semibold px-1 pt-0.5 leading-tight truncate" style={{ color: cat.color }}>
-                        {s.title}
-                      </p>
+                      <div className="flex items-center gap-0.5 px-1 pt-0.5">
+                        {s.person === 'mom' && <span className="text-[8px]">👩</span>}
+                        {s.person === 'dad' && <span className="text-[8px]">👨</span>}
+                        <p className="text-[10px] font-semibold leading-tight truncate" style={{ color: cat.color }}>
+                          {s.title}
+                        </p>
+                      </div>
                     </div>
                   )
                 })}
