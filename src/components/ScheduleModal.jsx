@@ -67,26 +67,29 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
 
   const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }))
 
-  // Auto-adjust endTime when startTime changes (keep duration, min 10 min)
-  function handleStartTimeChange(newStart) {
-    const [oh, om] = form.startTime.split(':').map(Number)
+  // Compute current duration in minutes from start/end
+  const currentDuration = (() => {
+    const [sh, sm] = form.startTime.split(':').map(Number)
     const [eh, em] = form.endTime.split(':').map(Number)
-    const duration = Math.max((eh * 60 + em) - (oh * 60 + om), DEFAULT_DURATION)
+    return Math.max((eh * 60 + em) - (sh * 60 + sm), DEFAULT_DURATION)
+  })()
+
+  // Set duration → auto-update endTime
+  function setDuration(mins) {
     setForm(prev => ({
       ...prev,
-      startTime: newStart,
-      endTime: addMinutes(newStart, duration),
+      endTime: addMinutes(prev.startTime, mins),
     }))
   }
 
-  // Ensure endTime > startTime when endTime changes
-  function handleEndTimeChange(newEnd) {
-    const [sh, sm] = form.startTime.split(':').map(Number)
-    const [eh, em] = newEnd.split(':').map(Number)
-    if (eh * 60 + em <= sh * 60 + sm) {
-      newEnd = addMinutes(form.startTime, DEFAULT_DURATION)
-    }
-    set('endTime', newEnd)
+  // Auto-adjust endTime when startTime changes (keep duration)
+  function handleStartTimeChange(newStart) {
+    setForm(prev => {
+      const [oh, om] = prev.startTime.split(':').map(Number)
+      const [eh, em] = prev.endTime.split(':').map(Number)
+      const dur = Math.max((eh * 60 + em) - (oh * 60 + om), DEFAULT_DURATION)
+      return { ...prev, startTime: newStart, endTime: addMinutes(newStart, dur) }
+    })
   }
 
   async function handleAddCat() {
@@ -266,15 +269,50 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
               className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none cursor-pointer" />
           </Row>
 
-          {/* Time */}
-          <Row label="시간">
+          {/* Time — start + duration */}
+          <Row label="시작" >
             <input type="time" value={form.startTime}
               onChange={e => handleStartTimeChange(e.target.value)}
               className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none" />
-            <span className="text-warm-400 font-medium text-sm">–</span>
-            <input type="time" value={form.endTime}
-              onChange={e => handleEndTimeChange(e.target.value)}
-              className="flex-1 bg-warm-100 rounded-xl px-3 py-2.5 text-sm text-warm-800 outline-none" />
+          </Row>
+          <Row label="소요" align="start">
+            <div className="flex-1">
+              <div className="flex gap-1.5 flex-wrap">
+                {[10, 15, 30, 60, 90, 120].map(m => {
+                  const label = m < 60 ? `${m}분` : `${m / 60}시간`
+                  const isActive = currentDuration === m
+                  return (
+                    <button
+                      key={m}
+                      onClick={() => setDuration(m)}
+                      className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all active:scale-95"
+                      style={{
+                        background: isActive ? '#D4715A' : '#F0EAE4',
+                        color:      isActive ? '#fff'    : '#8A7B72',
+                      }}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+              {/* Custom duration input */}
+              <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="number"
+                  min="5"
+                  max="480"
+                  step="5"
+                  value={currentDuration}
+                  onChange={e => setDuration(Math.max(5, parseInt(e.target.value) || 10))}
+                  className="w-16 bg-warm-100 rounded-xl px-3 py-2 text-sm text-warm-800 outline-none text-center"
+                />
+                <span className="text-[12px] text-warm-500">분</span>
+                <span className="text-[12px] text-warm-400 ml-auto">
+                  → {form.endTime} 종료
+                </span>
+              </div>
+            </div>
           </Row>
 
           {/* Person */}
