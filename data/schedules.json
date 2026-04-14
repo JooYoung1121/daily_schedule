@@ -4663,5 +4663,563 @@
     "id": "sch_1776151452009_4frspz",
     "completed": false,
     "createdAt": "2026-04-14T07:24:12.009Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-14",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589973_maj56z",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-16",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589974_i0xdhl",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-21",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589975_3fdj31",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-23",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589976_o0lbdj",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-28",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589977_ez8xe1",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-04-30",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589978_jrkfjz",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-05",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589979_krj6ef",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-07",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589980_xgvktv",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-12",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589981_rupago",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-14",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589982_9ucc9y",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-19",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589983_771lf2",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-21",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589984_k194st",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-26",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589985_99bp1u",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-05-28",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589986_wcvmlh",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-02",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589987_0q1gub",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-04",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589988_54ehjs",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-09",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589989_mqhmwp",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-11",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589990_lvhzqk",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-16",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589991_fxn47a",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-18",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589992_eiz2b5",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-23",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589993_agteba",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-25",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589994_35u1fm",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-06-30",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589995_b9jb2w",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-02",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589996_tiwjra",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-07",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589997_x1mocw",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-09",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589998_kp6hjn",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-14",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151589999_pfn6u8",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-16",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151590000_on34zl",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-21",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151590001_igtv3c",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-23",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151590002_37xe13",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
+  },
+  {
+    "title": "영상 강의 듣기",
+    "date": "2026-07-28",
+    "startTime": "15:00",
+    "endTime": "15:10",
+    "category": "study",
+    "note": "",
+    "repeat": "custom",
+    "person": "mom",
+    "repeatDays": [
+      2,
+      4
+    ],
+    "id": "sch_1776151590003_s6987r",
+    "repeatGroupId": "rpt_1776151589973_6y5yv5",
+    "completed": false,
+    "createdAt": "2026-04-14T07:26:29.973Z"
   }
 ]
