@@ -5807,5 +5807,19 @@
     "id": "sch_1776151697903_iv523k",
     "completed": false,
     "createdAt": "2026-04-14T07:28:17.903Z"
+  },
+  {
+    "title": "함이 목욕",
+    "date": "2026-04-14",
+    "startTime": "20:00",
+    "endTime": "20:30",
+    "category": "cat_1776044723273",
+    "note": "",
+    "repeat": "none",
+    "person": "all",
+    "repeatDays": [],
+    "id": "sch_1776151729518_xdn8uw",
+    "completed": false,
+    "createdAt": "2026-04-14T07:28:49.518Z"
   }
 ]
