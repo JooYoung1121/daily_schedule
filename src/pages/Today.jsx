@@ -26,7 +26,7 @@ export default function Today({ openModal }) {
   const timelineRef = useRef(null)
 
   const PERSON_TABS = [
-    { value: 'all', label: '전체', emoji: '👫' },
+    { value: 'all', label: '공통', emoji: '👫' },
     { value: 'mom', label: '엄마', emoji: '👩' },
     { value: 'dad', label: '아빠', emoji: '👨' },
   ]
@@ -47,10 +47,11 @@ export default function Today({ openModal }) {
 
   const sorted = [...displayed].sort((a, b) => a.startTime.localeCompare(b.startTime))
 
-  // Right timeline also filters by person
-  const timelineBlocks = personFilter === 'all'
-    ? displayed
-    : displayed.filter(s => s.person === personFilter || (!s.person && personFilter === 'all'))
+  // Right timeline: strict filter per person tab
+  const timelineBlocks = displayed.filter(s => {
+    if (personFilter === 'all') return !s.person || s.person === 'all'
+    return s.person === personFilter
+  })
 
   const completed = schedules.filter(s => s.completed).length
   const total     = schedules.length

@@ -12,7 +12,7 @@ const HOURS   = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START 
 const TOTAL_H = (DAY_END - DAY_START) * HOUR_HEIGHT
 
 const PERSON_TABS = [
-  { value: 'all', label: '전체', emoji: '👫' },
+  { value: 'all', label: '공통', emoji: '👫' },
   { value: 'mom', label: '엄마', emoji: '👩' },
   { value: 'dad', label: '아빠', emoji: '👨' },
 ]
@@ -30,9 +30,10 @@ export default function Week({ openModal }) {
   const prevWeek = () => { const d = new Date(base); d.setDate(d.getDate() - 7); setBase(d) }
   const nextWeek = () => { const d = new Date(base); d.setDate(d.getDate() + 7); setBase(d) }
 
-  const filtered = personFilter === 'all'
-    ? schedules
-    : schedules.filter(s => s.person === personFilter)
+  const filtered = schedules.filter(s => {
+    if (personFilter === 'all') return !s.person || s.person === 'all'
+    return s.person === personFilter
+  })
 
   const monthLabel = (() => {
     const m0 = weekDates[0].getMonth() + 1
