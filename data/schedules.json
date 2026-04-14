@@ -3515,5 +3515,19 @@
     "repeatGroupId": "rpt_1776150480821_7qmlvk",
     "completed": false,
     "createdAt": "2026-04-14T07:08:00.821Z"
+  },
+  {
+    "title": "맛있는 점심 시간~",
+    "date": "2026-04-14",
+    "startTime": "12:00",
+    "endTime": "13:00",
+    "category": "cat_1776150477707",
+    "note": "",
+    "repeat": "none",
+    "person": "all",
+    "repeatDays": [],
+    "id": "sch_1776151144728_6wullk",
+    "completed": false,
+    "createdAt": "2026-04-14T07:19:04.728Z"
   }
 ]
