@@ -2585,5 +2585,19 @@
     "repeatGroupId": "rpt_1776150167112_jplda4",
     "completed": false,
     "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 쓰기",
+    "date": "2026-04-14",
+    "startTime": "11:00",
+    "endTime": "12:00",
+    "category": "health",
+    "note": "",
+    "repeat": "none",
+    "person": "mom",
+    "repeatDays": [],
+    "id": "sch_1776150252144_qmw0a8",
+    "completed": false,
+    "createdAt": "2026-04-14T07:04:12.144Z"
   }
 ]
