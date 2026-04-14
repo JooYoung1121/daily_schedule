@@ -1996,5 +1996,594 @@
     "id": "sch_1776150079179_j96cx4",
     "completed": false,
     "createdAt": "2026-04-14T07:01:19.179Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-14",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167112_ikv1ee",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-15",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167113_8seonc",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-17",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167114_w7k4fh",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-20",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167115_saknut",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-22",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167116_e401gk",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-24",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167117_8rz8qo",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-27",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167118_1ic5oq",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-04-29",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167119_fzl2ry",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-01",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167120_oah4yo",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-04",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167121_i7g8cb",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-06",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167122_tbbnst",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-08",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167123_2klfap",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-11",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167124_yngz55",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-13",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167125_afcw91",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-15",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167126_ejcytn",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-18",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167127_zhsude",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-20",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167128_fqjbqv",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-22",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167129_ff90fh",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-25",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167130_tuk85d",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-27",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167131_shzxbb",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-05-29",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167132_bodzmb",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-01",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167133_kfvyvm",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-03",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167134_y3pz32",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-05",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167135_l1670q",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-08",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167136_zk3rvz",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-10",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167137_95gp7k",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-12",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167138_rpnzm7",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-15",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167139_edozls",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-17",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167140_zklovi",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-19",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167141_5tjodt",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
+  },
+  {
+    "title": "블로그 촬영",
+    "date": "2026-06-22",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "category": "health",
+    "note": "",
+    "repeat": "custom",
+    "person": "all",
+    "repeatDays": [
+      1,
+      3,
+      5
+    ],
+    "id": "sch_1776150167142_1tf8em",
+    "repeatGroupId": "rpt_1776150167112_jplda4",
+    "completed": false,
+    "createdAt": "2026-04-14T07:02:47.112Z"
   }
 ]
