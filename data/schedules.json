@@ -751,7 +751,8 @@
     "person": "dad",
     "id": "sch_1776087830417_f315",
     "completed": true,
-    "createdAt": "2026-04-13T13:43:50.417Z"
+    "createdAt": "2026-04-13T13:43:50.417Z",
+    "repeatDays": []
   },
   {
     "title": "운동",
