@@ -2002,10 +2002,10 @@
     "date": "2026-04-14",
     "startTime": "10:00",
     "endTime": "11:00",
-    "category": "health",
+    "category": "cat_1776150180223",
     "note": "",
     "repeat": "custom",
-    "person": "all",
+    "person": "mom",
     "repeatDays": [
       1,
       3,
