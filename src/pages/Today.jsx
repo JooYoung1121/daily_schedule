@@ -1,12 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { SlidersHorizontal, Check } from 'lucide-react'
 import {
   formatDate, getKoreanDateStr, getGreeting,
   HOUR_HEIGHT, DAY_START, DAY_END,
-  timeToTop, currentTimeTop, snapToTime,
+  timeToTop, currentTimeTop, snapToTime, blockHeight,
 } from '../utils'
 import { useSchedules } from '../context/ScheduleContext'
 import { useCategories } from '../context/CategoryContext'
+import { useSettings } from '../context/SettingsContext'
+import { fetchBabyTimeData } from '../github'
+import { analyzeBabyData } from '../data/babyAnalyzer'
 import StructuredBlock from '../components/StructuredBlock'
 import CategoryManager from '../components/CategoryManager'
 
@@ -18,11 +21,14 @@ export default function Today({ openModal }) {
   const todayStr = formatDate(today)
   const { schedules, loading, toggleComplete } = useSchedules(todayStr)
   const { categories, getCategory } = useCategories()
+  const { settings } = useSettings()
 
-  const [nowTop,     setNowTop]     = useState(currentTimeTop())
-  const [filter,     setFilter]     = useState('all')
-  const [showCatMgr,  setShowCatMgr]  = useState(false)
-  const [personFilter, setPersonFilter] = useState('everyone')
+  const [nowTop,        setNowTop]        = useState(currentTimeTop())
+  const [filter,        setFilter]        = useState('all')
+  const [showCatMgr,    setShowCatMgr]    = useState(false)
+  const [personFilter,  setPersonFilter]  = useState('everyone')
+  const [showBabyLayer, setShowBabyLayer] = useState(false)
+  const [babySchedule,  setBabySchedule]  = useState([])
   const timelineRef = useRef(null)
 
   const PERSON_TABS = [
@@ -42,9 +48,27 @@ export default function Today({ openModal }) {
     timelineRef.current.scrollTop = nowTop != null ? Math.max(0, nowTop - 120) : 0
   }, [loading]) // eslint-disable-line
 
+  // Load baby analysis data
+  useEffect(() => {
+    if (!settings.babyBirthdate) return
+    fetchBabyTimeData().then(({ babyData }) => {
+      if (!babyData?.records) return
+      const birth = new Date(settings.babyBirthdate)
+      const totalDays = Math.floor((new Date() - birth) / (1000 * 60 * 60 * 24))
+      const result = analyzeBabyData(babyData.records, totalDays)
+      if (result.todaySchedule) setBabySchedule(result.todaySchedule)
+    }).catch(() => {})
+  }, [settings.babyBirthdate])
+
+  // Filter real schedules (exclude legacy baby predictions)
+  const realSchedules = useMemo(() =>
+    schedules.filter(s => !s.isBabyPrediction),
+    [schedules]
+  )
+
   const displayed = filter === 'all'
-    ? schedules
-    : schedules.filter(s => s.category === filter)
+    ? realSchedules
+    : realSchedules.filter(s => s.category === filter)
 
   const sorted = [...displayed].sort((a, b) => a.startTime.localeCompare(b.startTime))
 
@@ -55,8 +79,8 @@ export default function Today({ openModal }) {
     return s.person === personFilter
   })
 
-  const completed = schedules.filter(s => s.completed).length
-  const total     = schedules.length
+  const completed = realSchedules.filter(s => s.completed).length
+  const total     = realSchedules.length
 
   function handleGridTap(e) {
     if (e.target !== e.currentTarget) return
@@ -68,6 +92,8 @@ export default function Today({ openModal }) {
       defaultPerson: (personFilter === 'mom' || personFilter === 'dad') ? personFilter : 'all',
     })
   }
+
+  const hasBabyData = babySchedule.length > 0
 
   return (
     <div className="flex flex-col bg-warm-100 overflow-hidden" style={{ height: '100%' }}>
@@ -179,7 +205,7 @@ export default function Today({ openModal }) {
 
         {/* ── Right: Structured timeline ── */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Person filter tabs */}
+          {/* Person filter tabs + baby toggle */}
           <div className="flex gap-1.5 px-2 py-2 flex-shrink-0 border-b border-warm-200/60">
             {PERSON_TABS.map(p => (
               <button
@@ -194,6 +220,18 @@ export default function Today({ openModal }) {
                 <span>{p.emoji}</span>{p.label}
               </button>
             ))}
+            {hasBabyData && (
+              <button
+                onClick={() => setShowBabyLayer(v => !v)}
+                className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
+                style={{
+                  background: showBabyLayer ? '#5E9E8A' : '#F0EAE4',
+                  color:      showBabyLayer ? '#fff'    : '#8A7B72',
+                }}
+              >
+                <span>👶</span>예상
+              </button>
+            )}
           </div>
 
           <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
@@ -235,6 +273,11 @@ export default function Today({ openModal }) {
                 </div>
               )}
 
+              {/* Baby overlay blocks */}
+              {showBabyLayer && babySchedule.map((s, i) => (
+                <BabyOverlayBlock key={`baby-${i}`} item={s} />
+              ))}
+
               {timelineBlocks.map(s => {
                 let position = 'full'
                 if (personFilter === 'everyone') {
@@ -258,6 +301,44 @@ export default function Today({ openModal }) {
       </div>
 
       {showCatMgr && <CategoryManager onClose={() => setShowCatMgr(false)} />}
+    </div>
+  )
+}
+
+// ── Baby overlay block (non-interactive, visual only) ──
+function BabyOverlayBlock({ item }) {
+  const top = timeToTop(item.startTime)
+  const height = Math.max(blockHeight(item.startTime, item.endTime), 32)
+
+  const colors = {
+    feeding: { bg: '#5E9E8A', text: '#fff' },
+    nap:     { bg: '#8B7EC8', text: '#fff' },
+    night:   { bg: '#5B8DB8', text: '#fff' },
+  }
+  const c = colors[item.type] || colors.feeding
+
+  return (
+    <div
+      className="absolute pointer-events-none z-10"
+      style={{ top, height, left: '4px', right: '4px' }}
+    >
+      <div
+        className="w-full h-full rounded-[12px] flex items-center gap-1.5 px-2.5 overflow-hidden"
+        style={{
+          backgroundColor: c.bg + '18',
+          border: `1.5px dashed ${c.bg}60`,
+        }}
+      >
+        <span className="text-[11px] flex-shrink-0">{item.title.split(' ')[0]}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-semibold truncate" style={{ color: c.bg }}>
+            {item.title.replace(/^[^\s]+\s/, '')}
+          </p>
+          <p className="text-[9px]" style={{ color: c.bg + 'AA' }}>
+            {item.startTime}~{item.endTime}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

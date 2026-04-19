@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSettings } from '../context/SettingsContext'
-import { useScheduleMutations } from '../context/ScheduleContext'
 import { fetchBabyTimeData, saveBabyTimeData } from '../github'
 import { FEEDING_GUIDE, SLEEP_GUIDE, MILESTONES_DETAIL, SOLID_FOOD_GUIDE, SOURCES, getGuideForAge } from '../data/babyReference'
-import { parseBabyTimeText, readBabyTimeFile, mergeAndSort } from '../data/babyTimeParser'
-import { analyzeBabyData, getTodaySummary } from '../data/babyAnalyzer'
+import { readBabyTimeFile, mergeAndSort } from '../data/babyTimeParser'
+import { analyzeBabyData } from '../data/babyAnalyzer'
 
 // ── 국가예방접종 스케줄 ──
 const VACCINATIONS = [
@@ -162,7 +161,6 @@ const SECTION_TABS = [
 
 export default function Baby() {
   const { settings, loading: settingsLoading, updateSetting } = useSettings()
-  const { addBabySchedules } = useScheduleMutations()
   const birthdate = settings.babyBirthdate || ''
 
   const [inputDate, setInputDate] = useState('')
@@ -173,7 +171,6 @@ export default function Baby() {
   const [analysis, setAnalysis] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [babyDataSha, setBabyDataSha] = useState(null)
-  const [scheduleAdded, setScheduleAdded] = useState(false)
   const monthTabsRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -244,14 +241,6 @@ export default function Baby() {
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }, [babyDataSha])
-
-  const handleAddToCalendar = useCallback(async () => {
-    if (!analysis?.todaySchedule?.length) return
-    const today = new Date().toISOString().split('T')[0]
-    await addBabySchedules(analysis.todaySchedule, today)
-    setScheduleAdded(true)
-    setTimeout(() => setScheduleAdded(false), 3000)
-  }, [analysis, addBabySchedules])
 
   if (settingsLoading) {
     return (
@@ -488,8 +477,6 @@ export default function Baby() {
             uploading={uploading}
             fileInputRef={fileInputRef}
             onFileUpload={handleFileUpload}
-            onAddToCalendar={handleAddToCalendar}
-            scheduleAdded={scheduleAdded}
             age={age}
           />
         )}
@@ -642,7 +629,7 @@ function GuideSection({ totalDays, milestone, viewIdx }) {
 }
 
 // ── 내 아이 분석 섹션 ──
-function AnalysisSection({ babyRecords, analysis, uploading, fileInputRef, onFileUpload, onAddToCalendar, scheduleAdded, age }) {
+function AnalysisSection({ babyRecords, analysis, uploading, fileInputRef, onFileUpload, age }) {
   if (!babyRecords) {
     return (
       <div className="bg-warm-50 rounded-2xl p-6 shadow-warm-sm border border-warm-200/40 text-center">
@@ -743,10 +730,11 @@ function AnalysisSection({ babyRecords, analysis, uploading, fileInputRef, onFil
               </div>
             ))}
           </div>
-          <button onClick={onAddToCalendar} disabled={scheduleAdded}
-            className="w-full mt-3 py-2.5 rounded-xl font-bold text-white text-[13px] bg-terra transition-all active:brightness-90 disabled:opacity-60">
-            {scheduleAdded ? '오늘 일정에 추가됨 ✓' : '오늘 일정에 추가하기'}
-          </button>
+          <div className="mt-3 bg-warm-100 rounded-xl px-3 py-2 text-center">
+            <p className="text-[11px] text-warm-500">
+              오늘 페이지 타임라인에서 <strong className="text-warm-700">👶 예상</strong> 버튼을 누르면 오버레이로 확인할 수 있어요
+            </p>
+          </div>
         </div>
       )}
 

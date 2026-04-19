@@ -142,29 +142,6 @@ export function ScheduleProvider({ children }) {
     await persist(next)
   }, [])
 
-  // ─── Baby schedule generation ──────────────────────────────────────────────
-  const addBabySchedules = useCallback(async (todaySchedules, dateStr) => {
-    // Remove existing baby prediction schedules for this date
-    const current = stateRef.current.schedules
-    const cleaned = current.filter(s => !(s.date === dateStr && s.isBabyPrediction))
-
-    const items = todaySchedules.map((data, i) => ({
-      title: data.title,
-      date: dateStr,
-      startTime: data.startTime,
-      endTime: data.endTime,
-      category: 'cat_1776044723273', // 함이
-      person: 'all',
-      note: data.note || '',
-      completed: false,
-      isBabyPrediction: true,
-      id: `baby_${Date.now() + i}_${Math.random().toString(36).slice(2, 8)}`,
-      createdAt: new Date().toISOString(),
-    }))
-
-    await persist([...cleaned, ...items])
-  }, [])
-
   const toggleComplete = useCallback(async (schedule) => {
     await updateSchedule(schedule.id, { completed: !schedule.completed })
   }, [updateSchedule])
@@ -175,8 +152,7 @@ export function ScheduleProvider({ children }) {
     <Ctx.Provider value={{
       schedules, loading, syncing, syncError,
       addSchedule, addSchedules, updateSchedule, deleteSchedule,
-      updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete,
-      addBabySchedules, reload,
+      updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete, reload,
     }}>
       {children}
     </Ctx.Provider>
@@ -203,12 +179,10 @@ export function useScheduleMutations() {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
     updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete,
-    addBabySchedules,
   } = useContext(Ctx)
   return {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
     updateScheduleGroup, deleteScheduleGroup, convertToRepeating, toggleComplete,
-    addBabySchedules,
   }
 }
 
