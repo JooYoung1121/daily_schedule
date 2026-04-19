@@ -60,15 +60,7 @@ export default function Today({ openModal }) {
   const [firstFeedTime, setFirstFeedTime] = useState(null)
   const timelineRef = useRef(null)
 
-  // Compute effective start hour from earliest schedule
-  const effectiveStart = useMemo(() => {
-    if (!schedules.length) return DAY_START
-    const earliest = Math.min(...schedules.map(s => {
-      const [h] = s.startTime.split(':').map(Number)
-      return h
-    }))
-    return Math.min(earliest, DAY_START)
-  }, [schedules])
+  const effectiveStart = 0 // 항상 00시부터 표시
 
   const TL = useMemo(() => makeTimelineHelpers(effectiveStart), [effectiveStart])
   const [nowTop, setNowTop] = useState(() => TL.nowTop())
