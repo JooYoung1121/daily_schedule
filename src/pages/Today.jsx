@@ -267,14 +267,14 @@ export default function Today({ openModal }) {
           )}
 
           <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
-          <div className="flex pl-1 pb-28">
+          <div className="flex pl-1 pt-2 pb-28">
             {/* Time labels */}
             <div className="w-[36px] flex-shrink-0 relative select-none" style={{ height: TOTAL_H }}>
               {HOURS.map(h => (
                 <div
                   key={h}
                   className="absolute right-1 text-[9px] font-medium text-warm-400 leading-none"
-                  style={{ top: (h - DAY_START) * HOUR_HEIGHT - 6 }}
+                  style={{ top: Math.max(0, (h - DAY_START) * HOUR_HEIGHT - 6) }}
                 >
                   {String(h).padStart(2, '0')}
                 </div>
