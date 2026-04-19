@@ -5849,19 +5849,5 @@
     "id": "sch_1776151774344_ld6cfe",
     "completed": false,
     "createdAt": "2026-04-14T07:29:34.344Z"
-  },
-  {
-    "title": "ㅇㅇ",
-    "date": "2026-04-19",
-    "startTime": "01:00",
-    "endTime": "01:10",
-    "category": "health",
-    "note": "",
-    "repeat": "none",
-    "person": "all",
-    "repeatDays": [],
-    "id": "sch_1776603469103_ia7asx",
-    "completed": false,
-    "createdAt": "2026-04-19T12:57:49.103Z"
   }
 ]
