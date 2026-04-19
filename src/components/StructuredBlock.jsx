@@ -28,8 +28,10 @@ export default function StructuredBlock({ schedule, position = 'full', onToggle,
       <div
         className={`w-full h-full rounded-[14px] flex items-center shadow-sm overflow-hidden ${compact ? 'gap-1 px-1.5' : 'gap-2 px-2'}`}
         style={{
-          backgroundColor: done ? '#F5F0EE' : '#FFFFFF',
-          border: `1.5px solid ${done ? '#E5DDD8' : cat.color + '50'}`,
+          backgroundColor: done ? '#F5F0EE' : schedule.isBabyPrediction ? cat.color + '08' : '#FFFFFF',
+          border: schedule.isBabyPrediction
+            ? `1.5px dashed ${cat.color + '80'}`
+            : `1.5px solid ${done ? '#E5DDD8' : cat.color + '50'}`,
         }}
       >
         {/* Category badge */}

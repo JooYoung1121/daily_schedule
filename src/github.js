@@ -119,6 +119,17 @@ export async function saveSettings(settings, sha) {
   return saveFile('data/settings.json', settings, sha, `settings: update ${timestamp()}`)
 }
 
+// ─── BabyTime data ───────────────────────────────────────────────────────
+
+export async function fetchBabyTimeData() {
+  const { data, sha } = await fetchFile('data/babytime.json', null)
+  return { babyData: data, sha }
+}
+
+export async function saveBabyTimeData(data, sha) {
+  return saveFile('data/babytime.json', data, sha, `babytime: update ${timestamp()}`)
+}
+
 // ─── Token test ───────────────────────────────────────────────────────────────
 
 export async function testToken() {
