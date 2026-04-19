@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { SlidersHorizontal, Check } from 'lucide-react'
 import {
   formatDate, getKoreanDateStr, getGreeting,
@@ -29,6 +29,10 @@ export default function Today({ openModal }) {
   const [personFilter,  setPersonFilter]  = useState('everyone')
   const [showBabyLayer, setShowBabyLayer] = useState(false)
   const [babySchedule,  setBabySchedule]  = useState([])
+  const [babyRecords,   setBabyRecords]   = useState(null)
+  const [babyTotalDays, setBabyTotalDays] = useState(0)
+  const [firstFeedTime, setFirstFeedTime] = useState(null) // user override
+  const [showTimeInput, setShowTimeInput] = useState(false)
   const timelineRef = useRef(null)
 
   const PERSON_TABS = [
@@ -48,17 +52,32 @@ export default function Today({ openModal }) {
     timelineRef.current.scrollTop = nowTop != null ? Math.max(0, nowTop - 120) : 0
   }, [loading]) // eslint-disable-line
 
-  // Load baby analysis data
+  // Load baby data once
   useEffect(() => {
     if (!settings.babyBirthdate) return
+    const birth = new Date(settings.babyBirthdate)
+    const totalDays = Math.floor((new Date() - birth) / (1000 * 60 * 60 * 24))
+    setBabyTotalDays(totalDays)
+
     fetchBabyTimeData().then(({ babyData }) => {
-      if (!babyData?.records) return
-      const birth = new Date(settings.babyBirthdate)
-      const totalDays = Math.floor((new Date() - birth) / (1000 * 60 * 60 * 24))
-      const result = analyzeBabyData(babyData.records, totalDays)
-      if (result.todaySchedule) setBabySchedule(result.todaySchedule)
+      if (babyData?.records) setBabyRecords(babyData.records)
     }).catch(() => {})
   }, [settings.babyBirthdate])
+
+  // Re-analyze when records or firstFeedTime changes
+  useEffect(() => {
+    if (!babyRecords || !babyTotalDays) return
+    const result = analyzeBabyData(babyRecords, babyTotalDays, firstFeedTime)
+    if (result.todaySchedule) setBabySchedule(result.todaySchedule)
+    // Set default first feed time from pattern (only once)
+    if (!firstFeedTime && result.patterns?.avgFirstFeeding) {
+      setFirstFeedTime(result.patterns.avgFirstFeeding)
+    }
+  }, [babyRecords, babyTotalDays, firstFeedTime])
+
+  const handleFirstFeedChange = useCallback((e) => {
+    setFirstFeedTime(e.target.value)
+  }, [])
 
   // Filter real schedules (exclude legacy baby predictions)
   const realSchedules = useMemo(() =>
@@ -72,7 +91,6 @@ export default function Today({ openModal }) {
 
   const sorted = [...displayed].sort((a, b) => a.startTime.localeCompare(b.startTime))
 
-  // Right timeline: filter per person tab
   const timelineBlocks = displayed.filter(s => {
     if (personFilter === 'everyone') return true
     if (personFilter === 'all') return !s.person || s.person === 'all'
@@ -234,6 +252,20 @@ export default function Today({ openModal }) {
             )}
           </div>
 
+          {/* First feeding time adjuster */}
+          {showBabyLayer && hasBabyData && (
+            <div className="flex items-center gap-2 px-3 py-1.5 border-b border-warm-200/60 bg-warm-50 flex-shrink-0">
+              <span className="text-[10px] text-warm-500">첫 수유</span>
+              <input
+                type="time"
+                value={firstFeedTime || ''}
+                onChange={handleFirstFeedChange}
+                className="text-[11px] font-semibold text-warm-800 bg-warm-100 border border-warm-200 rounded-lg px-2 py-1 outline-none w-[80px]"
+              />
+              <span className="text-[9px] text-warm-400 flex-1">변경 시 전체 일정이 자동 조정됩니다</span>
+            </div>
+          )}
+
           <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
           <div className="flex pl-1 pb-28">
             {/* Time labels */}
@@ -308,12 +340,13 @@ export default function Today({ openModal }) {
 // ── Baby overlay block (non-interactive, visual only) ──
 function BabyOverlayBlock({ item }) {
   const top = timeToTop(item.startTime)
-  const height = Math.max(blockHeight(item.startTime, item.endTime), 32)
+  const height = Math.max(blockHeight(item.startTime, item.endTime), 28)
 
   const colors = {
-    feeding: { bg: '#5E9E8A', text: '#fff' },
-    nap:     { bg: '#8B7EC8', text: '#fff' },
-    night:   { bg: '#5B8DB8', text: '#fff' },
+    feeding: { bg: '#5E9E8A' },
+    nap:     { bg: '#8B7EC8' },
+    night:   { bg: '#5B8DB8' },
+    play:    { bg: '#D4715A' },
   }
   const c = colors[item.type] || colors.feeding
 
@@ -334,9 +367,11 @@ function BabyOverlayBlock({ item }) {
           <p className="text-[10px] font-semibold truncate" style={{ color: c.bg }}>
             {item.title.replace(/^[^\s]+\s/, '')}
           </p>
-          <p className="text-[9px]" style={{ color: c.bg + 'AA' }}>
-            {item.startTime}~{item.endTime}
-          </p>
+          {height >= 36 && (
+            <p className="text-[9px]" style={{ color: c.bg + 'AA' }}>
+              {item.startTime}~{item.endTime}
+            </p>
+          )}
         </div>
       </div>
     </div>
