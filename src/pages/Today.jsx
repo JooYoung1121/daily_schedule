@@ -3,7 +3,9 @@ import { SlidersHorizontal, Check } from 'lucide-react'
 import {
   formatDate, getKoreanDateStr, getGreeting,
   HOUR_HEIGHT, DAY_START, DAY_END,
-  timeToTop, currentTimeTop, snapToTime, blockHeight,
+  timeToTop as _timeToTop, currentTimeTop as _currentTimeTop,
+  snapToTime as _snapToTime, blockHeight as _blockHeight,
+  timeToMinutes,
 } from '../utils'
 import { useSchedules } from '../context/ScheduleContext'
 import { useCategories } from '../context/CategoryContext'
@@ -13,8 +15,33 @@ import { analyzeBabyData } from '../data/babyAnalyzer'
 import StructuredBlock from '../components/StructuredBlock'
 import CategoryManager from '../components/CategoryManager'
 
-const HOURS   = Array.from({ length: DAY_END - DAY_START }, (_, i) => DAY_START + i)
-const TOTAL_H = (DAY_END - DAY_START) * HOUR_HEIGHT
+// Dynamic timeline helpers — effectiveStart can be earlier than DAY_START
+function makeTimelineHelpers(effectiveStart) {
+  const hours = Array.from({ length: DAY_END - effectiveStart }, (_, i) => effectiveStart + i)
+  const totalH = (DAY_END - effectiveStart) * HOUR_HEIGHT
+  const toTop = (time) => {
+    const [h, m] = time.split(':').map(Number)
+    return (h + m / 60 - effectiveStart) * HOUR_HEIGHT
+  }
+  const height = (s, e) => {
+    const diff = timeToMinutes(e) - timeToMinutes(s)
+    return Math.max((diff / 60) * HOUR_HEIGHT, 36)
+  }
+  const nowTop = () => {
+    const now = new Date()
+    const pos = (now.getHours() + now.getMinutes() / 60 - effectiveStart) * HOUR_HEIGHT
+    if (pos < 0 || pos > totalH) return null
+    return pos
+  }
+  const snap = (px) => {
+    const raw = px / HOUR_HEIGHT + effectiveStart
+    const mins = Math.round(raw * 60 / 30) * 30
+    const hour = Math.min(Math.max(Math.floor(mins / 60), effectiveStart), DAY_END - 1)
+    const minute = mins % 60
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+  }
+  return { hours, totalH, toTop, height, nowTop, snap }
+}
 
 export default function Today({ openModal }) {
   const today    = new Date()
@@ -23,7 +50,6 @@ export default function Today({ openModal }) {
   const { categories, getCategory } = useCategories()
   const { settings } = useSettings()
 
-  const [nowTop,        setNowTop]        = useState(currentTimeTop())
   const [filter,        setFilter]        = useState('all')
   const [showCatMgr,    setShowCatMgr]    = useState(false)
   const [personFilter,  setPersonFilter]  = useState('everyone')
@@ -31,9 +57,21 @@ export default function Today({ openModal }) {
   const [babySchedule,  setBabySchedule]  = useState([])
   const [babyRecords,   setBabyRecords]   = useState(null)
   const [babyTotalDays, setBabyTotalDays] = useState(0)
-  const [firstFeedTime, setFirstFeedTime] = useState(null) // user override
-  const [showTimeInput, setShowTimeInput] = useState(false)
+  const [firstFeedTime, setFirstFeedTime] = useState(null)
   const timelineRef = useRef(null)
+
+  // Compute effective start hour from earliest schedule
+  const effectiveStart = useMemo(() => {
+    if (!schedules.length) return DAY_START
+    const earliest = Math.min(...schedules.map(s => {
+      const [h] = s.startTime.split(':').map(Number)
+      return h
+    }))
+    return Math.min(earliest, DAY_START)
+  }, [schedules])
+
+  const TL = useMemo(() => makeTimelineHelpers(effectiveStart), [effectiveStart])
+  const [nowTop, setNowTop] = useState(() => TL.nowTop())
 
   const PERSON_TABS = [
     { value: 'everyone', label: '전체',  emoji: '👥' },
@@ -43,9 +81,9 @@ export default function Today({ openModal }) {
   ]
 
   useEffect(() => {
-    const t = setInterval(() => setNowTop(currentTimeTop()), 60_000)
+    const t = setInterval(() => setNowTop(TL.nowTop()), 60_000)
     return () => clearInterval(t)
-  }, [])
+  }, [TL])
 
   useEffect(() => {
     if (loading || !timelineRef.current) return
@@ -106,7 +144,7 @@ export default function Today({ openModal }) {
     const y = e.clientY - rect.top
     openModal({
       defaultDate: todayStr,
-      defaultStartTime: snapToTime(y),
+      defaultStartTime: TL.snap(y),
       defaultPerson: (personFilter === 'mom' || personFilter === 'dad') ? personFilter : 'all',
     })
   }
@@ -269,12 +307,12 @@ export default function Today({ openModal }) {
           <div ref={timelineRef} className="flex-1 overflow-y-auto scrollbar-none">
           <div className="flex pl-1 pt-2 pb-28">
             {/* Time labels */}
-            <div className="w-[36px] flex-shrink-0 relative select-none" style={{ height: TOTAL_H }}>
-              {HOURS.map(h => (
+            <div className="w-[36px] flex-shrink-0 relative select-none" style={{ height: TL.totalH }}>
+              {TL.hours.map(h => (
                 <div
                   key={h}
                   className="absolute right-1 text-[9px] font-medium text-warm-400 leading-none"
-                  style={{ top: Math.max(0, (h - DAY_START) * HOUR_HEIGHT - 6) }}
+                  style={{ top: Math.max(0, (h - effectiveStart) * HOUR_HEIGHT - 6) }}
                 >
                   {String(h).padStart(2, '0')}
                 </div>
@@ -284,14 +322,14 @@ export default function Today({ openModal }) {
             {/* Grid + blocks */}
             <div
               className="flex-1 relative cursor-pointer pr-2"
-              style={{ height: TOTAL_H }}
+              style={{ height: TL.totalH }}
               onClick={handleGridTap}
             >
-              {HOURS.map(h => (
+              {TL.hours.map(h => (
                 <div
                   key={h}
                   className="absolute left-0 right-0 border-t border-warm-200/60"
-                  style={{ top: (h - DAY_START) * HOUR_HEIGHT }}
+                  style={{ top: (h - effectiveStart) * HOUR_HEIGHT }}
                 />
               ))}
 
@@ -307,7 +345,7 @@ export default function Today({ openModal }) {
 
               {/* Baby overlay blocks */}
               {showBabyLayer && babySchedule.map((s, i) => (
-                <BabyOverlayBlock key={`baby-${i}`} item={s} />
+                <BabyOverlayBlock key={`baby-${i}`} item={s} effectiveStart={effectiveStart} />
               ))}
 
               {timelineBlocks.map(s => {
@@ -321,6 +359,7 @@ export default function Today({ openModal }) {
                     key={s.id}
                     schedule={s}
                     position={position}
+                    effectiveStart={effectiveStart}
                     onToggle={() => toggleComplete(s)}
                     onEdit={() => openModal({ schedule: s })}
                   />
@@ -338,9 +377,11 @@ export default function Today({ openModal }) {
 }
 
 // ── Baby overlay block (non-interactive, visual only) ──
-function BabyOverlayBlock({ item }) {
-  const top = timeToTop(item.startTime)
-  const height = Math.max(blockHeight(item.startTime, item.endTime), 28)
+function BabyOverlayBlock({ item, effectiveStart = DAY_START }) {
+  const [h, m] = item.startTime.split(':').map(Number)
+  const top = (h + m / 60 - effectiveStart) * HOUR_HEIGHT
+  const diff = timeToMinutes(item.endTime) - timeToMinutes(item.startTime)
+  const height = Math.max((diff / 60) * HOUR_HEIGHT, 28)
 
   const colors = {
     feeding: { bg: '#5E9E8A' },

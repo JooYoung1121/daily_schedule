@@ -1,14 +1,18 @@
 import { Check } from 'lucide-react'
-import { timeToTop, blockHeight } from '../utils'
+import { timeToTop, blockHeight, HOUR_HEIGHT, DAY_START, timeToMinutes } from '../utils'
 import { useCategories } from '../context/CategoryContext'
 
 const PERSON_EMOJI = { mom: '👩', dad: '👨' }
 
-export default function StructuredBlock({ schedule, position = 'full', onToggle, onEdit }) {
+export default function StructuredBlock({ schedule, position = 'full', effectiveStart, onToggle, onEdit }) {
   const { getCategory } = useCategories()
-  const cat    = getCategory(schedule.category)
-  const top    = timeToTop(schedule.startTime)
-  const height = Math.max(blockHeight(schedule.startTime, schedule.endTime), 44)
+  const cat = getCategory(schedule.category)
+  // Use effectiveStart if provided (for dynamic timeline), otherwise default
+  const es = effectiveStart ?? DAY_START
+  const [sh, sm] = schedule.startTime.split(':').map(Number)
+  const top = (sh + sm / 60 - es) * HOUR_HEIGHT
+  const diff = timeToMinutes(schedule.endTime) - timeToMinutes(schedule.startTime)
+  const height = Math.max((diff / 60) * HOUR_HEIGHT, 44)
   const done   = schedule.completed
   const compact = position !== 'full'
 
