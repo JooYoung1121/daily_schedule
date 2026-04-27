@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#F5EFE6" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5EFE6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#1F1812" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="나의 하루" />
@@ -13,6 +14,16 @@
       crossorigin
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
     />
+    <script>
+      // 다크 모드 즉시 적용 (FOUC 방지) — React 마운트 전 실행
+      (function () {
+        try {
+          var t = localStorage.getItem('theme') || 'system'
+          var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

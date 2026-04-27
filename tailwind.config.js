@@ -1,30 +1,31 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         warm: {
-          50:  '#FDFAF6',
-          100: '#F5EFE6',
-          200: '#EBE0D3',
-          300: '#D9CBBA',
-          400: '#C4AA91',
-          500: '#A88B6E',
-          600: '#8B6E52',
-          700: '#6E5340',
-          800: '#4A3828',
-          900: '#2C2118',
+          50:  'rgb(var(--color-warm-50)  / <alpha-value>)',
+          100: 'rgb(var(--color-warm-100) / <alpha-value>)',
+          200: 'rgb(var(--color-warm-200) / <alpha-value>)',
+          300: 'rgb(var(--color-warm-300) / <alpha-value>)',
+          400: 'rgb(var(--color-warm-400) / <alpha-value>)',
+          500: 'rgb(var(--color-warm-500) / <alpha-value>)',
+          600: 'rgb(var(--color-warm-600) / <alpha-value>)',
+          700: 'rgb(var(--color-warm-700) / <alpha-value>)',
+          800: 'rgb(var(--color-warm-800) / <alpha-value>)',
+          900: 'rgb(var(--color-warm-900) / <alpha-value>)',
         },
         terra: {
-          light: '#F5C4AF',
-          DEFAULT: '#D4715A',
-          dark:  '#B35A42',
+          light:   'rgb(var(--color-terra-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-terra)       / <alpha-value>)',
+          dark:    'rgb(var(--color-terra-dark)  / <alpha-value>)',
         },
         sage: {
-          light: '#C2DDD6',
-          DEFAULT: '#5E9E8A',
-          dark:  '#3D7A68',
+          light:   'rgb(var(--color-sage-light) / <alpha-value>)',
+          DEFAULT: 'rgb(var(--color-sage)       / <alpha-value>)',
+          dark:    'rgb(var(--color-sage-dark)  / <alpha-value>)',
         },
       },
       fontFamily: {
@@ -34,9 +35,9 @@ export default {
         '4xl': '2rem',
       },
       boxShadow: {
-        'warm-sm': '0 1px 3px rgba(44, 33, 24, 0.08)',
-        'warm':    '0 4px 12px rgba(44, 33, 24, 0.10)',
-        'warm-lg': '0 8px 28px rgba(44, 33, 24, 0.14)',
+        'warm-sm': '0 1px 3px rgba(0, 0, 0, 0.08)',
+        'warm':    '0 4px 12px rgba(0, 0, 0, 0.10)',
+        'warm-lg': '0 8px 28px rgba(0, 0, 0, 0.14)',
       },
       keyframes: {
         'slide-up': {

@@ -2,8 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* warm 톤 (베이지 계열) */
+    --color-warm-50:  253 250 246;
+    --color-warm-100: 245 239 230;
+    --color-warm-200: 235 224 211;
+    --color-warm-300: 217 203 186;
+    --color-warm-400: 196 170 145;
+    --color-warm-500: 168 139 110;
+    --color-warm-600: 139 110 82;
+    --color-warm-700: 110 83 64;
+    --color-warm-800: 74 56 40;
+    --color-warm-900: 44 33 24;
+
+    /* terra (메인 액센트) */
+    --color-terra-light: 245 196 175;
+    --color-terra:       212 113 90;
+    --color-terra-dark:  179 90 66;
+
+    /* sage (보조 액센트) */
+    --color-sage-light: 194 221 214;
+    --color-sage:       94 158 138;
+    --color-sage-dark:  61 122 104;
+
+    /* 페이지/카드 별칭 — 일관성 유지용 */
+    --color-page: var(--color-warm-100);
+    --color-card: var(--color-warm-50);
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* warm 인덱스 의미 유지하면서 다크 톤으로 반전 (낮은 idx = 카드/밝은면, 높은 idx = 텍스트) */
+    --color-warm-50:   42  34  26;   /* 카드 배경 — 페이지보다 살짝 밝음 */
+    --color-warm-100:  31  24  18;   /* 페이지 배경 — 가장 어두움 */
+    --color-warm-200:  58  47  36;   /* 보더, 비활성 chip 배경 */
+    --color-warm-300:  85  68  52;
+    --color-warm-400: 145 130 113;   /* placeholder, dim 텍스트 */
+    --color-warm-500: 184 168 148;   /* 보조 텍스트 */
+    --color-warm-600: 212 198 178;
+    --color-warm-700: 232 219 200;
+    --color-warm-800: 244 234 218;
+    --color-warm-900: 250 243 230;   /* 메인 텍스트 */
+
+    /* 액센트는 다크 배경 위 가독성 위해 살짝 밝게 */
+    --color-terra-light: 245 196 175;
+    --color-terra:       232 142 117;
+    --color-terra-dark:  212 113 90;
+
+    --color-sage-light: 194 221 214;
+    --color-sage:       128 178 158;
+    --color-sage-dark:   94 158 138;
+  }
 }
 
 * {
@@ -18,10 +71,11 @@ html, body {
 }
 
 body {
-  background-color: #F5EFE6;
+  background-color: rgb(var(--color-page));
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  color: #2C2118;
+  color: rgb(var(--color-warm-900));
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root {
@@ -29,7 +83,7 @@ body {
   margin: 0 auto;
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: #F5EFE6;
+  background-color: rgb(var(--color-page));
   position: relative;
 }
 
@@ -50,10 +104,10 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Custom date/time input styling */
+/* date/time input — 시스템 모드 따라가기 */
 input[type="date"],
 input[type="time"] {
-  color-scheme: light;
+  color-scheme: light dark;
 }
 
 /* Prevent text selection on interactive elements */
