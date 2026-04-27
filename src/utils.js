@@ -4,7 +4,7 @@ export const CATEGORIES = {
   personal: { id: 'personal', label: '개인', color: '#D4715A', bg: '#FAF0EB', light: '#F5C4AF' },
   health:   { id: 'health',   label: '건강', color: '#C8924A', bg: '#FAF3E8', light: '#EDC99A' },
   study:    { id: 'study',    label: '학습', color: '#8B7EC8', bg: '#F2F0FA', light: '#C9C3E8' },
-  other:    { id: 'other',    label: '기타', color: '#9B8E87', bg: '#F5F0EE', light: '#D4CBC7' },
+  other:    { id: 'other',    label: '기타', color: '#9B8E87', bg: 'rgb(var(--color-warm-100))', light: '#D4CBC7' },
 }
 
 export const CATEGORY_LIST = Object.values(CATEGORIES)

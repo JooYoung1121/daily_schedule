@@ -30,7 +30,7 @@ export default function SettingsModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end animate-fade-in">
-      <div className="absolute inset-0 bg-warm-900/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
 
       <div className="relative w-full max-w-[680px] mx-auto bg-warm-50 rounded-t-[28px] shadow-warm-lg animate-slide-up">
         <div className="flex justify-center pt-3">

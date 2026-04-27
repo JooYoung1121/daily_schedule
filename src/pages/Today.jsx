@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
-import { SlidersHorizontal, Check } from 'lucide-react'
+import { SlidersHorizontal, Check, Syringe, ExternalLink, Milk, Search, BarChart3, Sparkles, ChevronUp, ChevronDown } from 'lucide-react'
 import {
   formatDate, getKoreanDateStr, getGreeting,
   HOUR_HEIGHT, DAY_START, DAY_END,
@@ -7,11 +7,12 @@ import {
   snapToTime as _snapToTime, blockHeight as _blockHeight,
   timeToMinutes,
 } from '../utils'
-import { useSchedules } from '../context/ScheduleContext'
+import { useSchedules, useAllSchedules } from '../context/ScheduleContext'
 import { useCategories } from '../context/CategoryContext'
 import { useSettings } from '../context/SettingsContext'
 import { fetchBabyTimeData } from '../github'
 import { analyzeBabyData } from '../data/babyAnalyzer'
+import { getNextVaccination, VACCINATION_SOURCE_URL } from '../data/vaccinations'
 import StructuredBlock from '../components/StructuredBlock'
 import CategoryManager from '../components/CategoryManager'
 
@@ -43,21 +44,27 @@ function makeTimelineHelpers(effectiveStart) {
   return { hours, totalH, toTop, height, nowTop, snap }
 }
 
-export default function Today({ openModal }) {
+export default function Today({ openModal, onOpenSearch, onOpenStats }) {
   const today    = new Date()
   const todayStr = formatDate(today)
-  const { schedules, loading, toggleComplete } = useSchedules(todayStr)
+  const { schedules, loading, toggleComplete, updateSchedule } = useSchedules(todayStr)
+  const allSchedules = useAllSchedules()
   const { categories, getCategory } = useCategories()
   const { settings } = useSettings()
 
   const [filter,        setFilter]        = useState('all')
   const [showCatMgr,    setShowCatMgr]    = useState(false)
   const [personFilter,  setPersonFilter]  = useState('everyone')
+  const [compactHeader, setCompactHeader] = useState(() => {
+    try { return localStorage.getItem('today_compact_header') === '1' } catch { return false }
+  })
   const [showBabyLayer, setShowBabyLayer] = useState(false)
   const [babySchedule,  setBabySchedule]  = useState([])
   const [babyRecords,   setBabyRecords]   = useState(null)
   const [babyTotalDays, setBabyTotalDays] = useState(0)
+  const [babyPatterns,  setBabyPatterns]  = useState(null)
   const [firstFeedTime, setFirstFeedTime] = useState(null)
+  const [nowTick,       setNowTick]       = useState(() => Date.now())
   const timelineRef = useRef(null)
 
   const effectiveStart = 0 // 항상 00시부터 표시
@@ -99,14 +106,29 @@ export default function Today({ openModal }) {
     if (!babyRecords || !babyTotalDays) return
     const result = analyzeBabyData(babyRecords, babyTotalDays, firstFeedTime)
     if (result.todaySchedule) setBabySchedule(result.todaySchedule)
+    if (result.patterns) setBabyPatterns(result.patterns)
     // Set default first feed time from pattern (only once)
     if (!firstFeedTime && result.patterns?.avgFirstFeeding) {
       setFirstFeedTime(result.patterns.avgFirstFeeding)
     }
   }, [babyRecords, babyTotalDays, firstFeedTime])
 
+  // 1분마다 tick — 마지막 수유 경과 시간용
+  useEffect(() => {
+    const t = setInterval(() => setNowTick(Date.now()), 60_000)
+    return () => clearInterval(t)
+  }, [])
+
   const handleFirstFeedChange = useCallback((e) => {
     setFirstFeedTime(e.target.value)
+  }, [])
+
+  const toggleCompactHeader = useCallback(() => {
+    setCompactHeader(v => {
+      const next = !v
+      try { localStorage.setItem('today_compact_header', next ? '1' : '') } catch {}
+      return next
+    })
   }, [])
 
   // Filter real schedules (exclude legacy baby predictions)
@@ -130,6 +152,65 @@ export default function Today({ openModal }) {
   const completed = realSchedules.filter(s => s.completed).length
   const total     = realSchedules.length
 
+  // 다음 예방접종 — 60일 이내만 표시 (너무 먼 미래는 숨김)
+  const nextVacc = useMemo(() => {
+    if (!settings.babyBirthdate || !babyTotalDays) return null
+    const next = getNextVaccination(babyTotalDays)
+    if (!next) return null
+    if (next.status === 'future' && next.diffDays > 60) return null
+    return next
+  }, [settings.babyBirthdate, babyTotalDays])
+
+  // 자주 쓰는 일정 — 최근 60일 내 title 빈도 상위 5개 (오늘 이미 있는 건 제외)
+  const quickTemplates = useMemo(() => {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - 60)
+    const cutoffStr = formatDate(cutoff)
+    const todayTitles = new Set(realSchedules.map(s => (s.title || '').trim()))
+
+    const counts = new Map() // title -> { count, sample }
+    for (const s of allSchedules) {
+      if (s.isBabyPrediction) continue
+      if (!s.title || !s.title.trim()) continue
+      if (s.date < cutoffStr) continue
+      if (todayTitles.has(s.title.trim())) continue // 오늘 이미 있음
+      const key = s.title.trim()
+      const prev = counts.get(key) || { count: 0, sample: s }
+      prev.count += 1
+      // 가장 최근 샘플 유지 (category/person 추론용)
+      if (!prev.sample || s.date > prev.sample.date) prev.sample = s
+      counts.set(key, prev)
+    }
+    return [...counts.entries()]
+      .filter(([, v]) => v.count >= 2)   // 2회 이상 등장한 것만
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 5)
+      .map(([title, v]) => ({ title, count: v.count, sample: v.sample }))
+  }, [allSchedules, realSchedules])
+
+  // 마지막 수유 + 경과 시간 (BabyTime 데이터 기준)
+  const feedingTimer = useMemo(() => {
+    if (!babyRecords) return null
+    let best = null
+    for (const r of babyRecords) {
+      if (!['분유', '모유', '유축수유'].includes(r.type)) continue
+      if (!r.startDate || !r.startTime) continue
+      const ts = new Date(`${r.startDate}T${r.startTime}:00`).getTime()
+      if (Number.isNaN(ts)) continue
+      if (!best || ts > best.ts) best = { ts, startTime: r.startTime, type: r.type }
+    }
+    if (!best) return null
+    const elapsedMin = Math.max(0, Math.floor((nowTick - best.ts) / 60000))
+    // 24시간 넘으면 데이터가 stale로 간주, 표시 안 함
+    if (elapsedMin > 24 * 60) return null
+    return {
+      lastTime:    best.startTime,
+      lastType:    best.type,
+      elapsedMin,
+      avgInterval: babyPatterns?.avgFeedingInterval || 180,
+    }
+  }, [babyRecords, babyPatterns, nowTick])
+
   function handleGridTap(e) {
     if (e.target !== e.currentTarget) return
     const rect = e.currentTarget.getBoundingClientRect()
@@ -148,23 +229,62 @@ export default function Today({ openModal }) {
 
       {/* Header */}
       <div className="px-5 pt-8 pb-3 flex-shrink-0">
-        <p className="text-sm font-medium text-warm-500 mb-0.5">{getGreeting()} ✦</p>
-        <h1 className="text-[1.35rem] font-bold text-warm-900 leading-snug tracking-tight">
-          {getKoreanDateStr(today)}
-        </h1>
-        {total > 0 && (
-          <div className="flex items-center gap-2.5 mt-3">
-            <div className="flex-1 h-1.5 rounded-full bg-warm-200 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-terra transition-all duration-700"
-                style={{ width: `${(completed / total) * 100}%` }}
-              />
-            </div>
-            <span className="text-xs font-semibold text-warm-500">{completed}/{total} 완료</span>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-warm-500 mb-0.5">{getGreeting()} ✦</p>
+            <h1 className="text-[1.35rem] font-bold text-warm-900 leading-snug tracking-tight">
+              {getKoreanDateStr(today)}
+            </h1>
           </div>
-        )}
-        {total === 0 && !loading && (
-          <p className="mt-2 text-sm text-warm-400">오늘 일정이 없어요. 오른쪽 타임라인을 탭해 추가해보세요.</p>
+          <div className="flex items-center gap-1.5 flex-shrink-0 mt-1">
+            <button
+              onClick={onOpenSearch}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+              aria-label="검색"
+            >
+              <Search size={16} className="text-warm-700" />
+            </button>
+            <button
+              onClick={onOpenStats}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+              aria-label="통계"
+            >
+              <BarChart3 size={16} className="text-warm-700" />
+            </button>
+            <button
+              onClick={toggleCompactHeader}
+              className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+              aria-label={compactHeader ? '헤더 펼치기' : '헤더 접기'}
+            >
+              {compactHeader
+                ? <ChevronDown size={16} className="text-warm-700" />
+                : <ChevronUp   size={16} className="text-warm-700" />}
+            </button>
+          </div>
+        </div>
+        {!compactHeader && (
+          <>
+            {total > 0 && (
+              <div className="flex items-center gap-2.5 mt-3">
+                <div className="flex-1 h-1.5 rounded-full bg-warm-200 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-terra transition-all duration-700"
+                    style={{ width: `${(completed / total) * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs font-semibold text-warm-500">{completed}/{total} 완료</span>
+              </div>
+            )}
+            {total === 0 && !loading && (
+              <p className="mt-2 text-sm text-warm-400">오늘 일정이 없어요. 오른쪽 타임라인을 탭해 추가해보세요.</p>
+            )}
+            {(nextVacc || feedingTimer) && (
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {nextVacc && <VaccinationDdayCard next={nextVacc} />}
+                {feedingTimer && <FeedingTimerCard data={feedingTimer} />}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -192,6 +312,34 @@ export default function Today({ openModal }) {
           <SlidersHorizontal size={14} className="text-warm-600" />
         </button>
       </div>
+
+      {/* Quick templates — 자주 쓰는 일정 (최근 60일 내, 2회+ 등장) */}
+      {quickTemplates.length > 0 && (
+        <div className="px-4 pb-3 flex gap-2 items-center flex-shrink-0">
+          <div className="flex items-center gap-1 text-warm-400 flex-shrink-0">
+            <Sparkles size={11} />
+            <span className="text-[10px] font-bold uppercase tracking-wide">자주</span>
+          </div>
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none flex-1">
+            {quickTemplates.map(({ title, count, sample }) => (
+              <button
+                key={title}
+                onClick={() => openModal({
+                  defaultDate:     todayStr,
+                  defaultTitle:    title,
+                  defaultCategory: sample.category,
+                  defaultPerson:   (personFilter === 'mom' || personFilter === 'dad') ? personFilter : (sample.person || 'all'),
+                  defaultStartTime: sample.startTime,
+                })}
+                className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full bg-warm-50 border border-warm-200/60 text-[11px] font-semibold text-warm-700 active:bg-warm-100 active:scale-95 transition-all"
+              >
+                <span className="truncate max-w-[140px]">{title}</span>
+                <span className="text-[9px] text-warm-400">·{count}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Split layout */}
       <div className="flex flex-1 overflow-hidden border-t border-warm-200/60">
@@ -224,7 +372,7 @@ export default function Today({ openModal }) {
                       <p
                         className="text-[13px] font-bold leading-snug"
                         style={{
-                          color: s.completed ? '#B0A49E' : '#3D302B',
+                          color: s.completed ? 'rgb(var(--color-warm-400))' : 'rgb(var(--color-warm-900))',
                           textDecoration: s.completed ? 'line-through' : 'none',
                         }}
                       >
@@ -261,8 +409,8 @@ export default function Today({ openModal }) {
                 onClick={() => setPersonFilter(p.value)}
                 className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
                 style={{
-                  background: personFilter === p.value ? '#D4715A' : '#F0EAE4',
-                  color:      personFilter === p.value ? '#fff'    : '#8A7B72',
+                  background: personFilter === p.value ? '#D4715A' : 'rgb(var(--color-warm-200))',
+                  color:      personFilter === p.value ? '#fff'    : 'rgb(var(--color-warm-500))',
                 }}
               >
                 <span>{p.emoji}</span>{p.label}
@@ -273,8 +421,8 @@ export default function Today({ openModal }) {
                 onClick={() => setShowBabyLayer(v => !v)}
                 className="ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
                 style={{
-                  background: showBabyLayer ? '#5E9E8A' : '#F0EAE4',
-                  color:      showBabyLayer ? '#fff'    : '#8A7B72',
+                  background: showBabyLayer ? '#5E9E8A' : 'rgb(var(--color-warm-200))',
+                  color:      showBabyLayer ? '#fff'    : 'rgb(var(--color-warm-500))',
                 }}
               >
                 <span>👶</span>예상
@@ -354,6 +502,7 @@ export default function Today({ openModal }) {
                     effectiveStart={effectiveStart}
                     onToggle={() => toggleComplete(s)}
                     onEdit={() => openModal({ schedule: s })}
+                    onMove={(startTime, endTime) => updateSchedule(s.id, { startTime, endTime })}
                   />
                 )
               })}
@@ -364,6 +513,107 @@ export default function Today({ openModal }) {
       </div>
 
       {showCatMgr && <CategoryManager onClose={() => setShowCatMgr(false)} />}
+    </div>
+  )
+}
+
+// ── 예방접종 D-day 카드 (헤더 영역) ──
+function VaccinationDdayCard({ next }) {
+  const { vaccination: v, status, diffDays } = next
+
+  // status별 색상 — current는 강조, upcoming은 sage, future는 차분
+  const palette = {
+    current:  { bg: 'rgba(212, 113, 90, 0.12)',  border: 'rgba(212, 113, 90, 0.25)',  fg: '#D4715A', label: '접종 시기' },
+    upcoming: { bg: 'rgba(94, 158, 138, 0.12)',  border: 'rgba(94, 158, 138, 0.25)',  fg: '#5E9E8A', label: '다가오는 접종' },
+    future:   { bg: 'rgba(155, 142, 135, 0.10)', border: 'rgba(155, 142, 135, 0.20)', fg: '#9B8E87', label: '예정된 접종' },
+  }
+  const c = palette[status] || palette.future
+
+  // D-day 표기
+  const ddayText =
+    diffDays > 0  ? `D-${diffDays}` :
+    diffDays === 0 ? 'D-day' :
+                     `D+${Math.abs(diffDays)}`
+
+  // 백신 미리보기 (앞 2개 + 외 N종)
+  const preview = v.vaccines.length <= 2
+    ? v.vaccines.join(', ')
+    : `${v.vaccines.slice(0, 2).join(', ')} 외 ${v.vaccines.length - 2}종`
+
+  return (
+    <a
+      href={VACCINATION_SOURCE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-2xl px-3 py-2.5 active:scale-[0.99] transition-transform"
+      style={{ backgroundColor: c.bg, border: `1px solid ${c.border}` }}
+    >
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ backgroundColor: c.fg + '22' }}
+      >
+        <Syringe size={16} style={{ color: c.fg }} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: c.fg }}>
+          {c.label}
+        </p>
+        <p className="text-[12px] font-semibold text-warm-900 truncate">
+          {v.label} · {preview}
+        </p>
+      </div>
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <span className="text-[15px] font-bold" style={{ color: c.fg }}>{ddayText}</span>
+        <ExternalLink size={11} style={{ color: c.fg + 'AA' }} />
+      </div>
+    </a>
+  )
+}
+
+// ── 마지막 수유 경과 타이머 (BabyTime 데이터 기준) ──
+function FeedingTimerCard({ data }) {
+  const { lastTime, elapsedMin, avgInterval } = data
+
+  // 평균 간격 대비 경과 비율로 상태 결정
+  const status =
+    elapsedMin > avgInterval * 1.15 ? 'overdue' :
+    elapsedMin > avgInterval * 0.85 ? 'soon'    : 'ok'
+
+  const palette = {
+    ok:      { fg: '#5E9E8A', bg: 'rgba(94, 158, 138, 0.12)',  border: 'rgba(94, 158, 138, 0.25)',  label: '여유' },
+    soon:    { fg: '#C8924A', bg: 'rgba(200, 146, 74, 0.12)',  border: 'rgba(200, 146, 74, 0.25)',  label: '수유 임박' },
+    overdue: { fg: '#D4715A', bg: 'rgba(212, 113, 90, 0.14)',  border: 'rgba(212, 113, 90, 0.30)',  label: '수유 시간' },
+  }
+  const c = palette[status]
+
+  const fmt = (m) => m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간 ${m % 60}분`
+  const pct = Math.min((elapsedMin / Math.max(avgInterval, 1)) * 100, 100)
+
+  return (
+    <div
+      className="flex items-center gap-3 rounded-2xl px-3 py-2.5"
+      style={{ backgroundColor: c.bg, border: `1px solid ${c.border}` }}
+    >
+      <div
+        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ backgroundColor: c.fg + '22' }}
+      >
+        <Milk size={16} style={{ color: c.fg }} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-wide truncate" style={{ color: c.fg }}>
+          {c.label} · 마지막 {lastTime}
+        </p>
+        <p className="text-[12px] font-semibold text-warm-900 truncate">
+          {fmt(elapsedMin)} 경과 · 평균 {fmt(avgInterval)}
+        </p>
+        <div className="mt-1 h-1 rounded-full bg-warm-200/80 overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: `${pct}%`, backgroundColor: c.fg }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

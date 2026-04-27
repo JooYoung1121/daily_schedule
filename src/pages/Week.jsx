@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
 import {
   formatDate, getWeekDates, getKoreanDay,
   HOUR_HEIGHT, DAY_START, DAY_END,
@@ -18,7 +18,7 @@ const PERSON_TABS = [
   { value: 'dad',      label: '아빠', emoji: '👨' },
 ]
 
-export default function Week({ openModal }) {
+export default function Week({ openModal, onOpenSearch }) {
   const [base, setBase] = useState(new Date())
   const [personFilter, setPersonFilter] = useState('everyone')
   const weekDates    = getWeekDates(base)
@@ -47,7 +47,16 @@ export default function Week({ openModal }) {
   return (
     <div className="flex flex-col bg-warm-100 overflow-hidden" style={{ height: '100%' }}>
       <div className="px-5 pt-8 pb-3 flex-shrink-0">
-        <h1 className="text-[1.35rem] font-bold text-warm-900 tracking-tight mb-3">주간 일정</h1>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-[1.35rem] font-bold text-warm-900 tracking-tight">주간 일정</h1>
+          <button
+            onClick={onOpenSearch}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors"
+            aria-label="검색"
+          >
+            <Search size={16} className="text-warm-700" />
+          </button>
+        </div>
         <div className="flex items-center justify-between">
           <button onClick={prevWeek} className="w-9 h-9 flex items-center justify-center rounded-full bg-warm-200 active:bg-warm-300 transition-colors">
             <ChevronLeft size={18} className="text-warm-700" />
@@ -67,8 +76,8 @@ export default function Week({ openModal }) {
             onClick={() => setPersonFilter(p.value)}
             className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all active:scale-95"
             style={{
-              background: personFilter === p.value ? '#D4715A' : '#F0EAE4',
-              color:      personFilter === p.value ? '#fff'    : '#8A7B72',
+              background: personFilter === p.value ? '#D4715A' : 'rgb(var(--color-warm-200))',
+              color:      personFilter === p.value ? '#fff'    : 'rgb(var(--color-warm-500))',
             }}
           >
             <span>{p.emoji}</span>{p.label}

@@ -10,7 +10,7 @@ export default function TimelineBlock({ schedule, onToggle, onEdit }) {
   const done   = schedule.completed
 
   const bg = done ? '#F0ECE8' : cat.color + '28'
-  const border = done ? '#C4B8B0' : cat.color
+  const border = done ? 'rgb(var(--color-warm-400))' : cat.color
 
   return (
     <div
@@ -24,14 +24,14 @@ export default function TimelineBlock({ schedule, onToggle, onEdit }) {
           <p
             className="text-[13px] font-bold leading-snug"
             style={{
-              color:          done ? '#B0A49E' : cat.color,
+              color:          done ? 'rgb(var(--color-warm-400))' : cat.color,
               textDecoration: done ? 'line-through' : 'none',
             }}
           >
             {schedule.title}
           </p>
           {height >= 52 && (
-            <p className="text-[11px] mt-0.5 font-medium" style={{ color: done ? '#C4B8B0' : cat.color + 'AA' }}>
+            <p className="text-[11px] mt-0.5 font-medium" style={{ color: done ? 'rgb(var(--color-warm-400))' : cat.color + 'AA' }}>
               {schedule.startTime} – {schedule.endTime}
             </p>
           )}
@@ -43,8 +43,8 @@ export default function TimelineBlock({ schedule, onToggle, onEdit }) {
           className="mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center
                      transition-all active:scale-90"
           style={{
-            borderColor:     done ? '#C4B8B0' : cat.color,
-            backgroundColor: done ? '#C4B8B0' : 'transparent',
+            borderColor:     done ? 'rgb(var(--color-warm-400))' : cat.color,
+            backgroundColor: done ? 'rgb(var(--color-warm-400))' : 'transparent',
           }}
           onClick={e => { e.stopPropagation(); onToggle() }}
         >

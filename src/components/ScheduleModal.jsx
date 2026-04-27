@@ -27,7 +27,7 @@ function addMinutes(time, mins) {
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
 }
 
-export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, defaultPerson, onClose }) {
+export default function ScheduleModal({ schedule, defaultDate, defaultStartTime, defaultPerson, defaultTitle, defaultCategory, onClose }) {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
     updateScheduleGroup, deleteScheduleGroup, convertToRepeating,
@@ -43,14 +43,14 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
   const firstCatId = categories[0]?.id ?? 'work'
 
   const [form, setForm] = useState({
-    title:      schedule?.title      ?? '',
-    date:       schedule?.date       ?? defaultDate ?? todayStr,
+    title:      schedule?.title      ?? defaultTitle    ?? '',
+    date:       schedule?.date       ?? defaultDate     ?? todayStr,
     startTime:  schedule?.startTime  ?? startFallback,
     endTime:    schedule?.endTime    ?? addMinutes(startFallback, DEFAULT_DURATION),
-    category:   schedule?.category   ?? firstCatId,
+    category:   schedule?.category   ?? defaultCategory ?? firstCatId,
     note:       schedule?.note       ?? '',
     repeat:     schedule?.repeat     ?? 'none',
-    person:     schedule?.person     ?? defaultPerson ?? 'all',
+    person:     schedule?.person     ?? defaultPerson   ?? 'all',
     repeatDays: schedule?.repeatDays ?? [],
   })
   const [saving,   setSaving]   = useState(false)
@@ -208,7 +208,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
 
   return (
     <div className="fixed inset-0 z-50 flex items-end animate-fade-in" onKeyDown={handleKeyDown}>
-      <div className="absolute inset-0 bg-warm-900/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
 
       <div className="relative w-full max-w-[680px] mx-auto bg-warm-50 rounded-t-[28px] shadow-warm-lg animate-slide-up">
         <div className="flex justify-center pt-3">
@@ -248,7 +248,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                   className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all"
                   style={{
                     background: !applyToGroup ? '#fff' : 'transparent',
-                    color:      !applyToGroup ? '#3D302B' : '#8A7B72',
+                    color:      !applyToGroup ? 'rgb(var(--color-warm-900))' : 'rgb(var(--color-warm-500))',
                     boxShadow:  !applyToGroup ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
                   }}
                 >
@@ -259,7 +259,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                   className="px-2.5 py-1 rounded-md text-[11px] font-bold transition-all"
                   style={{
                     background: applyToGroup ? '#D4715A' : 'transparent',
-                    color:      applyToGroup ? '#fff'    : '#8A7B72',
+                    color:      applyToGroup ? '#fff'    : 'rgb(var(--color-warm-500))',
                   }}
                 >
                   전체
@@ -292,8 +292,8 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                       onClick={() => setDuration(m)}
                       className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all active:scale-95"
                       style={{
-                        background: isActive ? '#D4715A' : '#F0EAE4',
-                        color:      isActive ? '#fff'    : '#8A7B72',
+                        background: isActive ? '#D4715A' : 'rgb(var(--color-warm-200))',
+                        color:      isActive ? '#fff'    : 'rgb(var(--color-warm-500))',
                       }}
                     >
                       {label}
@@ -333,8 +333,8 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                   onClick={() => set('person', p.value)}
                   className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-semibold transition-all active:scale-95"
                   style={{
-                    background: form.person === p.value ? '#D4715A' : '#F5EFE6',
-                    color:      form.person === p.value ? '#fff'    : '#8A7B72',
+                    background: form.person === p.value ? '#D4715A' : 'rgb(var(--color-warm-100))',
+                    color:      form.person === p.value ? '#fff'    : 'rgb(var(--color-warm-500))',
                   }}
                 >
                   <span>{p.emoji}</span>{p.label}
@@ -379,7 +379,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                     value={newCatLabel}
                     onChange={e => setNewCatLabel(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') handleAddCat(); if (e.key === 'Escape') setShowAddCat(false) }}
-                    className="w-full bg-white rounded-xl px-3 py-2 text-[13px] text-warm-800 outline-none placeholder-warm-300"
+                    className="w-full bg-warm-50 rounded-xl px-3 py-2 text-[13px] text-warm-800 outline-none placeholder-warm-300"
                   />
                   <div className="flex items-center gap-2 flex-wrap">
                     {QUICK_PALETTE.map(c => (
@@ -396,7 +396,7 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                   <div className="flex gap-2">
                     <button
                       onClick={() => { setShowAddCat(false); setNewCatLabel('') }}
-                      className="flex-1 py-2 rounded-xl text-[13px] font-semibold text-warm-500 bg-white active:bg-warm-200 transition-colors"
+                      className="flex-1 py-2 rounded-xl text-[13px] font-semibold text-warm-500 bg-warm-50 active:bg-warm-200 transition-colors"
                     >
                       취소
                     </button>
@@ -440,8 +440,8 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                         onClick={() => set('repeat', opt.value)}
                         className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all active:scale-95"
                         style={{
-                          background: form.repeat === opt.value ? '#D4715A' : '#F5EFE6',
-                          color:      form.repeat === opt.value ? '#fff'    : '#8A7B72',
+                          background: form.repeat === opt.value ? '#D4715A' : 'rgb(var(--color-warm-100))',
+                          color:      form.repeat === opt.value ? '#fff'    : 'rgb(var(--color-warm-500))',
                         }}
                       >
                         {opt.label}
@@ -459,8 +459,8 @@ export default function ScheduleModal({ schedule, defaultDate, defaultStartTime,
                         onClick={() => toggleRepeatDay(i)}
                         className="w-9 h-9 rounded-full text-[12px] font-bold transition-all active:scale-90"
                         style={{
-                          background: (form.repeatDays || []).includes(i) ? '#D4715A' : '#F0EAE4',
-                          color:      (form.repeatDays || []).includes(i) ? '#fff'    : '#8A7B72',
+                          background: (form.repeatDays || []).includes(i) ? '#D4715A' : 'rgb(var(--color-warm-200))',
+                          color:      (form.repeatDays || []).includes(i) ? '#fff'    : 'rgb(var(--color-warm-500))',
                         }}
                       >
                         {label}

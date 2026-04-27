@@ -57,7 +57,7 @@ export default function CategoryManager({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end animate-fade-in">
-      <div className="absolute inset-0 bg-warm-900/40 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
 
       <div className="relative w-full max-w-[680px] mx-auto bg-warm-50 rounded-t-[28px] shadow-warm-lg animate-slide-up">
         {/* Handle */}
@@ -136,7 +136,7 @@ export default function CategoryManager({ onClose }) {
 
 function EditForm({ form, setForm, onSave, onCancel, saving, isNew }) {
   return (
-    <div className="p-4 rounded-2xl border-2 border-warm-200 bg-white space-y-3">
+    <div className="p-4 rounded-2xl border-2 border-warm-200 bg-warm-50 space-y-3">
       {/* Name input */}
       <input
         type="text"
