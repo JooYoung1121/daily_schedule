@@ -4,20 +4,7 @@ import { fetchBabyTimeData, saveBabyTimeData } from '../github'
 import { FEEDING_GUIDE, SLEEP_GUIDE, MILESTONES_DETAIL, SOLID_FOOD_GUIDE, SOURCES, getGuideForAge } from '../data/babyReference'
 import { readBabyTimeFile, mergeAndSort } from '../data/babyTimeParser'
 import { analyzeBabyData } from '../data/babyAnalyzer'
-
-// ── 국가예방접종 스케줄 ──
-const VACCINATIONS = [
-  { days: 0,   label: '출생',      vaccines: ['BCG (결핵)', 'B형간염 1차'] },
-  { days: 30,  label: '1개월',     vaccines: ['B형간염 2차'] },
-  { days: 60,  label: '2개월',     vaccines: ['DTaP 1차', '폴리오 1차', 'Hib 1차', '폐렴구균 1차', '로타바이러스 1차'] },
-  { days: 120, label: '4개월',     vaccines: ['DTaP 2차', '폴리오 2차', 'Hib 2차', '폐렴구균 2차', '로타바이러스 2차'] },
-  { days: 180, label: '6개월',     vaccines: ['DTaP 3차', '폴리오 3차', 'Hib 3차', '폐렴구균 3차', 'B형간염 3차', '로타바이러스 3차'] },
-  { days: 365, label: '12개월',    vaccines: ['MMR 1차', '수두', 'A형간염 1차', 'Hib 4차', '폐렴구균 4차', '일본뇌염 1차'] },
-  { days: 450, label: '15~18개월', vaccines: ['DTaP 4차', 'MMR 2차'] },
-  { days: 730, label: '24개월',    vaccines: ['A형간염 2차', '일본뇌염 2차'] },
-  { days: 1825,label: '만 5세',    vaccines: ['DTaP 5차', '폴리오 4차', '일본뇌염 3차'] },
-  { days: 4380,label: '만 12세',   vaccines: ['Tdap/Td', 'HPV (여아 2회)', '일본뇌염 4차'] },
-]
+import { VACCINATIONS, VACCINATION_SOURCE_URL } from '../data/vaccinations'
 
 // ── 주차별 발달 마일스톤 (기존) ──
 const MILESTONES = [
@@ -354,7 +341,7 @@ export default function Baby() {
             className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[12px] font-semibold transition-all"
             style={{
               background: section === tab.id ? milestone.color : 'transparent',
-              color: section === tab.id ? '#fff' : '#8A7B72',
+              color: section === tab.id ? '#fff' : 'rgb(var(--color-warm-500))',
             }}
           >
             <span>{tab.icon}</span>{tab.label}
@@ -491,7 +478,7 @@ function VaccinationCard({ age }) {
     <div className="bg-warm-50 rounded-2xl p-4 shadow-warm-sm border border-warm-200/40">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-[14px] font-bold text-warm-900">예방접종 일정</h3>
-        <a href="https://nip.kdca.go.kr/irhp/infm/goVcntInfo.do?menuLv=1&menuCd=115"
+        <a href={VACCINATION_SOURCE_URL}
           target="_blank" rel="noopener noreferrer"
           className="text-[10px] text-warm-400 underline underline-offset-2">
           질병관리청 기준

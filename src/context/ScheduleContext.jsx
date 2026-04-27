@@ -175,6 +175,11 @@ export function useWeekSchedules(dates) {
   return { ...ctx, schedules: ctx.schedules.filter(s => dateSet.has(s.date)) }
 }
 
+export function useAllSchedules() {
+  const ctx = useContext(Ctx)
+  return ctx.schedules
+}
+
 export function useScheduleMutations() {
   const {
     addSchedule, addSchedules, updateSchedule, deleteSchedule,
