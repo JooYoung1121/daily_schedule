@@ -5,6 +5,7 @@ import { FEEDING_GUIDE, SLEEP_GUIDE, MILESTONES_DETAIL, SOLID_FOOD_GUIDE, SOURCE
 import { readBabyTimeFile, mergeAndSort } from '../data/babyTimeParser'
 import { analyzeBabyData } from '../data/babyAnalyzer'
 import { VACCINATIONS, VACCINATION_SOURCE_URL } from '../data/vaccinations'
+import WeaningSection from '../components/WeaningSection'
 
 // ── 주차별 발달 마일스톤 (기존) ──
 const MILESTONES = [
@@ -142,6 +143,7 @@ function getCurrentMilestoneIndex(weeks) {
 // ── 섹션 탭 ──
 const SECTION_TABS = [
   { id: 'dev',   label: '발달정보', icon: '📋' },
+  { id: 'weaning', label: '이유식', icon: '🥣' },
   { id: 'guide', label: '표준 가이드', icon: '📊' },
   { id: 'analysis', label: '내 아이 분석', icon: '🔍' },
 ]
@@ -338,7 +340,7 @@ export default function Baby() {
       <div className="flex gap-1 px-4 pb-3 flex-shrink-0">
         {SECTION_TABS.map(tab => (
           <button key={tab.id} onClick={() => setSection(tab.id)}
-            className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[12px] font-semibold transition-all"
+            className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-[11px] font-semibold transition-all whitespace-nowrap"
             style={{
               background: section === tab.id ? milestone.color : 'transparent',
               color: section === tab.id ? '#fff' : 'rgb(var(--color-warm-500))',
@@ -449,6 +451,11 @@ export default function Baby() {
             {/* Vaccination schedule */}
             <VaccinationCard age={age} />
           </>
+        )}
+
+        {/* ── 이유식 섹션 ── */}
+        {section === 'weaning' && (
+          <WeaningSection age={age} />
         )}
 
         {/* ── 표준 가이드 섹션 ── */}
