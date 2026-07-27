@@ -27,6 +27,10 @@ export const WEANING_SOURCES = {
     name: 'WHO — Complementary feeding',
     url: 'https://www.who.int/health-topics/complementary-feeding',
   },
+  CDC: {
+    name: 'CDC — When, What, and How to Introduce Solid Foods',
+    url: 'https://www.cdc.gov/infant-toddler-nutrition/foods-and-drinks/when-what-and-how-to-introduce-solid-foods.html',
+  },
   MFDS: {
     name: '식품의약품안전처 식품안전나라',
     url: 'https://www.foodsafetykorea.go.kr/',
@@ -132,8 +136,9 @@ export const WEANING_STAGES = [
 ]
 
 // ─────────────────────────────────────────────
-// 2) 식재료 도입 시기 (검색용 핵심 데이터)
-//    stage: early/mid/late/complete/after1y
+// 2) 식재료 가이드 (검색·섭취 기록 매칭용 핵심 데이터)
+//    stage는 한국에서 흔히 쓰는 추천 단계이며, 생우유 음용 등 별도 금기 외에는
+//    발달 준비가 된 생후 6개월 무렵부터 안전한 질감으로 다양한 식품군을 경험할 수 있다.
 // ─────────────────────────────────────────────
 export const INGREDIENTS = [
   // 곡류
@@ -141,14 +146,14 @@ export const INGREDIENTS = [
   { name: '찹쌀',        aliases: [], cat: '곡류', stage: 'early', allergen: false, note: '쌀 적응 후' },
   { name: '오트밀(귀리)', aliases: ['귀리'], cat: '곡류', stage: 'early', allergen: false, note: '초기 후반~중기, 곱게 갈아서' },
   { name: '보리',        aliases: [], cat: '곡류', stage: 'mid', allergen: false, note: '글루텐 소량 함유' },
-  { name: '밀(글루텐)',  aliases: ['밀가루', '국수'], cat: '곡류', stage: 'mid', allergen: true, note: '알레르기 유발 8대 식품. 6개월 이후 소량 도입 권장' },
+  { name: '밀(글루텐)',  aliases: ['밀가루', '국수'], cat: '곡류', stage: 'early', allergen: true, note: '이유식 시작 무렵부터 완전히 익혀 소량씩' },
 
   // 채소
   { name: '애호박',      aliases: ['호박'], cat: '채소', stage: 'early', allergen: false, note: '초기 채소로 무난, 익혀서 곱게' },
   { name: '단호박',      aliases: [], cat: '채소', stage: 'early', allergen: false, note: '단맛이 좋아 거부 적음' },
   { name: '감자',        aliases: [], cat: '채소', stage: 'early', allergen: false, note: '으깨서 부드럽게' },
   { name: '고구마',      aliases: [], cat: '채소', stage: 'early', allergen: false, note: '변비 주의해 수분과 함께' },
-  { name: '청경채',      aliases: [], cat: '채소', stage: 'early', allergen: false, note: '부드러운 잎채소' },
+  { name: '청경채',      aliases: ['청경'], cat: '채소', stage: 'early', allergen: false, note: '부드러운 잎채소' },
   { name: '브로콜리',    aliases: [], cat: '채소', stage: 'early', allergen: false, note: '꽃 부분 데쳐서, 초기~중기' },
   { name: '당근',        aliases: [], cat: '채소', stage: 'early', allergen: false, note: '반드시 익혀서. 생당근은 질식 위험' },
   { name: '오이',        aliases: [], cat: '채소', stage: 'early', allergen: false, note: '초기엔 익혀서, 후기 핑거푸드로' },
@@ -156,6 +161,11 @@ export const INGREDIENTS = [
   { name: '시금치',      aliases: [], cat: '채소', stage: 'mid', allergen: false, note: '질산염 — 6개월 이후 소량부터' },
   { name: '비트',        aliases: [], cat: '채소', stage: 'mid', allergen: false, note: '질산염 — 6개월 이후 소량' },
   { name: '토마토',      aliases: ['방울토마토'], cat: '채소', stage: 'mid', allergen: false, note: '산도 높음. 방울토마토는 4등분(질식)' },
+  { name: '무',          aliases: [], cat: '채소', stage: 'early', allergen: false, note: '푹 익혀 부드럽게' },
+  { name: '양파',        aliases: [], cat: '채소', stage: 'early', allergen: false, note: '푹 익혀 소량부터' },
+  { name: '버섯',        aliases: ['표고버섯'], cat: '채소', stage: 'mid', allergen: false, note: '완전히 익혀 잘게 다져서' },
+  { name: '미역',        aliases: [], cat: '채소', stage: 'mid', allergen: false, note: '염분을 충분히 빼고 잘게 다져서' },
+  { name: '비타민채',    aliases: ['비타민'], cat: '채소', stage: 'mid', allergen: false, note: '부드럽게 익힌 잎채소' },
 
   // 과일
   { name: '사과',        aliases: [], cat: '과일', stage: 'early', allergen: false, note: '익혀서 퓨레로, 초기 무난' },
@@ -170,19 +180,20 @@ export const INGREDIENTS = [
   { name: '망고',        aliases: [], cat: '과일', stage: 'mid', allergen: false, note: '잘 익은 것 으깨서' },
 
   // 단백질
-  { name: '소고기',      aliases: ['쇠고기', '소고기미음'], cat: '단백질', stage: 'early', allergen: false, note: '철분 최고 공급원. 초기(시작 2~3주 후)부터 권장' },
+  { name: '소고기',      aliases: ['쇠고기', '한우', '소고기미음'], cat: '단백질', stage: 'early', allergen: false, note: '철분 공급원. 이유식 초기부터 잘 익혀 곱게 다져 제공' },
   { name: '닭고기',      aliases: ['닭가슴살'], cat: '단백질', stage: 'mid', allergen: false, note: '지방 적은 가슴살·안심부터' },
-  { name: '흰살생선',    aliases: ['대구', '광어', '도미'], cat: '단백질', stage: 'mid', allergen: true, note: '알레르기 가능. 가시 제거 철저' },
+  { name: '흰살생선',    aliases: ['대구', '광어', '도미', '가자미'], cat: '단백질', stage: 'mid', allergen: true, note: '완전히 익히고 가시를 철저히 제거해 소량부터' },
   { name: '연어',        aliases: [], cat: '단백질', stage: 'mid', allergen: true, note: '중기~후기, 오메가3' },
-  { name: '두부',        aliases: ['콩'], cat: '단백질', stage: 'mid', allergen: true, note: '대두 알레르기 가능, 부드러워 좋음' },
-  { name: '달걀노른자',  aliases: ['계란노른자'], cat: '단백질', stage: 'mid', allergen: true, note: '익힌 노른자부터' },
-  { name: '달걀전란',    aliases: ['계란', '달걀흰자'], cat: '단백질', stage: 'mid', allergen: true, note: '관례는 후기지만, 최신 권장은 6개월경 조기 도입이 알레르기 예방에 유리' },
-  { name: '땅콩',        aliases: ['땅콩버터'], cat: '단백질', stage: 'mid', allergen: true, note: '통땅콩 금지(질식). 묽은 땅콩버터로 6개월경 조기 도입 권장(LEAP 연구)' },
-  { name: '새우·갑각류', aliases: ['새우', '게', '갑각류'], cat: '단백질', stage: 'after1y', allergen: true, note: '알레르기 강함, 돌 무렵 이후' },
+  { name: '두부',        aliases: ['대두'], cat: '단백질', stage: 'early', allergen: true, note: '대두 알레르기 가능. 부드럽게 으깨 소량부터' },
+  { name: '검은콩',      aliases: ['서리태'], cat: '단백질', stage: 'mid', allergen: true, note: '푹 익혀 껍질 없이 곱게 갈아 소량부터' },
+  { name: '달걀',        aliases: ['계란', '달걀노른자', '계란노른자', '달걀전란', '달걀흰자'], cat: '단백질', stage: 'early', allergen: true, note: '이유식 시작 무렵부터 완전히 익힌 전란을 소량씩' },
+  { name: '땅콩',        aliases: ['땅콩버터'], cat: '단백질', stage: 'early', allergen: true, note: '통땅콩 금지. 묽게 푼 땅콩버터로 소량 도입; 심한 습진·달걀 알레르기는 의사 상담' },
+  { name: '참깨',        aliases: ['흑임자', '깨'], cat: '단백질', stage: 'mid', allergen: true, note: '곱게 갈거나 묽은 페이스트로 소량부터' },
+  { name: '새우·갑각류', aliases: ['새우', '게', '갑각류'], cat: '단백질', stage: 'after1y', allergen: true, note: '국내 질병관리청은 돌 무렵 도입 안내. 완전히 익혀 잘게 다지고 알레르기 관찰' },
 
   // 유제품
-  { name: '플레인 요구르트', aliases: ['요거트'], cat: '유제품', stage: 'mid', allergen: true, note: '무가당. 조리·소량은 중기 가능' },
-  { name: '치즈',        aliases: ['아기치즈'], cat: '유제품', stage: 'mid', allergen: true, note: '저염 아기치즈 소량' },
+  { name: '플레인 요구르트', aliases: ['요거트'], cat: '유제품', stage: 'early', allergen: true, note: '살균유로 만든 무가당 제품을 소량부터' },
+  { name: '치즈',        aliases: ['아기치즈'], cat: '유제품', stage: 'early', allergen: true, note: '살균유·저염 제품을 소량부터' },
   { name: '생우유(음용)', aliases: ['우유'], cat: '유제품', stage: 'after1y', allergen: true, note: '돌 이후 음용. 그 전 조리용 소량은 가능' },
 ]
 
@@ -211,8 +222,8 @@ export const ALLERGY_GUIDE = {
   },
   earlyIntro: {
     title: '알레르기 식품 "조기 도입"이 최신 권장',
-    body: '과거엔 알레르기 우려로 늦게 시작했지만, 최신 지침은 이유식을 시작하는 만 4~6개월에 알레르기 유발 식품도 (한 번에 하나씩) 도입하는 것이 오히려 알레르기 예방에 유리하다고 본다. 땅콩(LEAP 연구)·달걀이 대표 사례.',
-    sources: ['KDCA', 'AAP'],
+    body: '과거와 달리 알레르기 우려만으로 우유·달걀·생선·견과류 등을 미루는 것은 권장되지 않는다. 발달 준비가 된 생후 6개월 무렵 다른 음식과 함께 한 번에 하나씩 소량 도입한다. 심한 습진이나 달걀 알레르기가 있다면 땅콩 도입 전 의사와 상의한다.',
+    sources: ['KDCA', 'CDC'],
   },
   // 8대(국내 표시대상은 더 많지만 영아 흔한 것 중심)
   majorAllergens: [
@@ -224,6 +235,7 @@ export const ALLERGY_GUIDE = {
     { name: '견과류', emoji: '🌰', note: '통째 금지(질식), 갈아서' },
     { name: '생선', emoji: '🐟', note: '흰살생선부터, 가시 제거' },
     { name: '갑각류', emoji: '🦐', note: '돌 무렵 이후' },
+    { name: '참깨', emoji: '🌱', note: '곱게 갈거나 묽은 페이스트로 소량' },
   ],
   source: 'MFDS',
 }

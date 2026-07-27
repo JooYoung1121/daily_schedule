@@ -1,7 +1,7 @@
 /**
  * BabyTime 앱 export txt 파일 파싱기
  * 포맷: `====================` 구분자로 레코드 분리
- * 기록 종류: 분유, 모유, 낮잠, 밤잠, 기저귀, 목욕, 열
+ * 기록 종류: 분유, 모유, 이유식, 낮잠, 밤잠, 기저귀, 목욕, 열
  */
 
 const RECORD_SEPARATOR = '===================='
@@ -30,6 +30,8 @@ function parseRecord(block) {
     amountMl: null, side: null,
     diaperType: null, diaperColor: null,
     temperature: null,
+    amountUnit: null, weaningFood: null,
+    memo: null,
   }
 
   // 첫 줄: 시간 범위 또는 단일 시간
@@ -54,8 +56,17 @@ function parseRecord(block) {
       const m = line.match(/(\d+)/)
       if (m) record.durationMin = parseInt(m[1], 10)
     } else if (line.includes('총 양(ml):') || line.includes('총양(ml):')) {
-      const m = line.match(/(\d+)\s*\(ml\)/)
-      if (m) record.amountMl = parseInt(m[1], 10)
+      // BabyTime은 이유식 양의 제목은 "(ml)"로 내보내면서 실제 단위는
+      // 값 뒤에 (ml) 또는 (g)로 기록한다.
+      const m = line.match(/([\d.]+)\s*\((ml|g)\)/i)
+      if (m) {
+        record.amountMl = Number(m[1])
+        record.amountUnit = m[2].toLowerCase()
+      }
+    } else if (line.startsWith('이유식 종류:')) {
+      record.weaningFood = line.replace('이유식 종류:', '').trim() || null
+    } else if (line.startsWith('메모:')) {
+      record.memo = line.replace('메모:', '').trim() || null
     } else if (line.startsWith('수유 방향:') || line.startsWith('유축 방향:')) {
       record.side = line.split(':')[1]?.trim() || null
     } else if (line.startsWith('배변 형태:')) {
@@ -95,6 +106,26 @@ export function mergeAndSort(recordArrays) {
     const da = `${a.startDate} ${a.startTime}`
     const db = `${b.startDate} ${b.startTime}`
     return da.localeCompare(db)
+  })
+}
+
+/**
+ * 새로 가져온 월만 교체하고, 그 외 월의 기존 기록은 보존한다.
+ * 한 달을 다시 내보내 업로드해도 과거 전체 기록이 사라지지 않도록 한다.
+ */
+export function replaceMonths(existingRecords = [], incomingRecords = []) {
+  const incomingMonths = new Set(
+    incomingRecords.map(record => record.startDate?.slice(0, 7)).filter(Boolean),
+  )
+  const preserved = existingRecords.filter(record =>
+    !incomingMonths.has(record.startDate?.slice(0, 7)),
+  )
+  const seen = new Set()
+  return mergeAndSort([preserved, incomingRecords]).filter(record => {
+    const key = JSON.stringify(record)
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
   })
 }
 

@@ -4,8 +4,10 @@ import {
   ALLERGY_GUIDE, AVOID_FOODS, BLW_GUIDE, TOOLS, STORES, YOUTUBE,
   REFERENCE_SITES, WEANING_SOURCES, getStageIndexByDays,
 } from '../data/weaningGuide'
+import { analyzeWeaningRecords } from '../data/weaningAnalyzer'
 
 const SUB_TABS = [
+  { id: 'record', label: '먹은 기록', icon: '📝' },
   { id: 'start',  label: '시작',   icon: '🚀' },
   { id: 'stages', label: '단계별', icon: '📈' },
   { id: 'foods',  label: '식재료', icon: '🥕' },
@@ -18,10 +20,14 @@ const SUB_TABS = [
 
 const srcLinks = (ids) => ids.map(id => WEANING_SOURCES[id]).filter(Boolean)
 
-export default function WeaningSection({ age }) {
+export default function WeaningSection({ age, records = [] }) {
   const totalDays = age?.totalDays ?? 0
   const currentStageIdx = getStageIndexByDays(totalDays)
-  const [sub, setSub] = useState('start')
+  const weaning = useMemo(
+    () => analyzeWeaningRecords(records, totalDays),
+    [records, totalDays],
+  )
+  const [sub, setSub] = useState('record')
   const [query, setQuery] = useState('')
 
   const q = query.trim().toLowerCase()
@@ -80,6 +86,7 @@ export default function WeaningSection({ age }) {
             ))}
           </div>
 
+          {sub === 'record' && <RecordTab analysis={weaning} />}
           {sub === 'start'  && <StartTab currentStageIdx={currentStageIdx} totalDays={totalDays} />}
           {sub === 'stages' && <StagesTab currentStageIdx={currentStageIdx} />}
           {sub === 'foods'  && <FoodsTab />}
@@ -125,6 +132,257 @@ function StageBadge({ stageId }) {
     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
       style={{ background: s.color + '22', color: s.color }}>{s.label}</span>
   )
+}
+
+// ── 실제 BabyTime 이유식 기록 ──
+function RecordTab({ analysis }) {
+  const [showAll, setShowAll] = useState(false)
+  const {
+    meals, latestMeals, triedIngredients, refusedIngredients, categoryProgress,
+    allergenProgress, nextIngredients, monthly, ageGuide, dateRange,
+    recentMeals, menuRecordedCount,
+  } = analysis
+
+  if (!meals.length) {
+    return (
+      <Card className="text-center py-8">
+        <div className="text-4xl mb-3">🥣</div>
+        <h3 className="text-[15px] font-bold text-warm-900">아직 이유식 기록이 없어요</h3>
+        <p className="text-[12px] text-warm-500 mt-1.5 leading-relaxed">
+          BabyTime에서 이유식 종류나 메모를 입력하면<br />
+          먹어본 재료와 날짜가 자동으로 정리돼요.
+        </p>
+      </Card>
+    )
+  }
+
+  const visibleMeals = showAll ? [...meals].reverse() : latestMeals
+  const triedAllergens = allergenProgress.filter(item => item.tried)
+
+  return (
+    <div className="space-y-3">
+      <Card className="overflow-hidden">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <p className="text-[10px] font-bold text-terra uppercase tracking-wide">BabyTime 자동 정리</p>
+            <h3 className="text-[17px] font-bold text-warm-900 mt-0.5">이유식 기록 한눈에</h3>
+            <p className="text-[10px] text-warm-400 mt-1">
+              {formatDate(dateRange.from)} ~ {formatDate(dateRange.to)}
+            </p>
+          </div>
+          <span className="text-[10px] font-bold text-sage-dark bg-sage/10 px-2.5 py-1 rounded-full">
+            최신 {formatDate(dateRange.to)}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <RecordStat value={`${meals.length}회`} label="총 기록" />
+          <RecordStat value={`${triedIngredients.length}개`} label="확인된 재료" />
+          <RecordStat value={`${recentMeals.length}회`} label="최근 7일" />
+        </div>
+        <p className="text-[10px] text-warm-400 mt-3 leading-relaxed">
+          메뉴가 적힌 {menuRecordedCount}건의 종류·메모만 분류했어요. 시판 이유식의 전체 원재료는 제품 표시를 별도로 확인해주세요.
+        </p>
+      </Card>
+
+      <Card className="bg-sage/5">
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <p className="text-[10px] font-bold text-sage-dark">현재 월령 기준</p>
+            <h3 className="text-[15px] font-bold text-warm-900">{ageGuide.label} · {ageGuide.title}</h3>
+          </div>
+          <span className="text-2xl">🥄</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2 mb-3">
+          <Mini label="횟수" value={ageGuide.meals} />
+          <Mini label="한 끼 양" value={ageGuide.amount} />
+          <Mini label="질감" value={ageGuide.texture} />
+        </div>
+        <p className="text-[12px] text-warm-600 leading-relaxed">{ageGuide.focus}</p>
+        <p className="text-[10px] text-warm-400 mt-2">
+          권장량은 목표치가 아닌 참고 범위예요. 실제 섭취량과 성장 상태는 아이마다 다릅니다.
+        </p>
+        <SourceLine ids={['KDCA', 'WHO']} />
+      </Card>
+
+      <Card>
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 className="text-[14px] font-bold text-warm-900">먹어본 식품군</h3>
+            <p className="text-[10px] text-warm-400 mt-0.5">재료명을 적은 BabyTime 기록 기준</p>
+          </div>
+          <span className="text-[10px] font-bold text-sage-dark bg-sage/10 px-2 py-1 rounded-full">
+            {categoryProgress.filter(group => group.count > 0).length}/{categoryProgress.length}군
+          </span>
+        </div>
+        <div className="space-y-2">
+          {categoryProgress.map(group => (
+            <div key={group.id} className="bg-warm-100 rounded-xl p-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[15px]">{group.icon}</span>
+                <p className="text-[12px] font-bold text-warm-800">{group.label}</p>
+                <span className="ml-auto text-[10px] text-warm-400">{group.count}개</span>
+              </div>
+              {group.count > 0 ? (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {group.items.map(item => (
+                    <span key={item.ingredient.name}
+                      className="text-[10px] font-semibold text-warm-700 bg-warm-50 px-2 py-1 rounded-full">
+                      ✓ {item.ingredient.name}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-warm-400 mt-1.5">{group.hint}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div>
+            <h3 className="text-[14px] font-bold text-warm-900">알레르기 식품 체크</h3>
+            <p className="text-[10px] text-warm-400 mt-0.5">먹은 기록 {triedAllergens.length}개 확인</p>
+          </div>
+          <span className="text-[18px]">🛡️</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {allergenProgress.map(item => (
+            <span key={item.ingredient.name}
+              className={`text-[10px] font-semibold px-2 py-1 rounded-full ${
+                item.tried
+                  ? 'text-sage-dark bg-sage/15'
+                  : 'text-warm-400 bg-warm-100'
+              }`}>
+              {item.tried ? '✓' : '○'} {item.ingredient.name}
+            </span>
+          ))}
+        </div>
+        <p className="text-[10px] text-warm-400 mt-2.5 leading-relaxed">
+          알레르기 식품은 한 번에 하나씩 소량으로 시작해 반응을 관찰하세요. 심한 습진·기존 알레르기가 있다면 먼저 소아과와 상의하세요.
+        </p>
+        <SourceLine ids={['KDCA', 'CDC']} />
+      </Card>
+
+      <Card>
+        <h3 className="text-[14px] font-bold text-warm-900 mb-1">다음에 경험해볼 재료</h3>
+        <p className="text-[10px] text-warm-400 mb-2.5">
+          아직 메모에서 확인되지 않은 재료예요. 필수 순서가 아니라 다양성을 위한 참고 목록입니다.
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {nextIngredients.map(ingredient => (
+            <div key={ingredient.name} className="bg-warm-100 rounded-xl p-2.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="text-[12px] font-bold text-warm-800">{ingredient.name}</p>
+                {ingredient.allergen && (
+                  <span className="text-[8px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">알레르기</span>
+                )}
+              </div>
+              <p className="text-[9px] text-warm-400 mt-1">{ingredient.cat} · {ingredient.note}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {refusedIngredients.length > 0 && (
+        <Card className="bg-amber/5">
+          <h3 className="text-[13px] font-bold text-warm-900 mb-2">다시 천천히 시도해볼 음식</h3>
+          <div className="flex flex-wrap gap-1.5">
+            {refusedIngredients.map(item => (
+              <span key={item.ingredient.name}
+                className="text-[10px] font-semibold text-warm-600 bg-warm-100 px-2 py-1 rounded-full">
+                {item.ingredient.name} · {formatDate(item.lastDate)}
+              </span>
+            ))}
+          </div>
+          <p className="text-[10px] text-warm-400 mt-2">새 음식 거부는 자연스러워요. 강요하지 않고 다른 날 다시 경험해보세요.</p>
+        </Card>
+      )}
+
+      <Card>
+        <h3 className="text-[14px] font-bold text-warm-900 mb-2.5">월별 기록</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {monthly.map(month => (
+            <div key={month.month} className="bg-warm-100 rounded-xl p-2.5">
+              <p className="text-[11px] font-bold text-warm-800">{formatMonth(month.month)}</p>
+              <p className="text-[10px] text-warm-500 mt-0.5">{month.mealCount}회 · 재료 {month.ingredients.length}개</p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex items-center justify-between mb-2.5">
+          <div>
+            <h3 className="text-[14px] font-bold text-warm-900">날짜별 이유식</h3>
+            <p className="text-[10px] text-warm-400 mt-0.5">종류·메모 원문과 섭취량</p>
+          </div>
+          <span className="text-[10px] text-warm-400">{showAll ? `${meals.length}건 전체` : '최근 12건'}</span>
+        </div>
+        <div className="space-y-2">
+          {visibleMeals.map((meal, index) => (
+            <div key={`${meal.startDate}-${meal.startTime}-${index}`} className="bg-warm-100 rounded-xl p-3">
+              <div className="flex items-start gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <p className="text-[11px] font-bold text-warm-500">
+                      {formatDate(meal.startDate)} · {meal.startTime}
+                    </p>
+                    {meal.refused && (
+                      <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">안 먹음</span>
+                    )}
+                  </div>
+                  <p className={`text-[13px] font-bold mt-0.5 ${
+                    meal.menu === '메뉴 미기록' ? 'text-warm-400' : 'text-warm-800'
+                  }`}>{meal.menu}</p>
+                </div>
+                <span className="text-[11px] font-bold text-sage-dark bg-sage/10 px-2 py-1 rounded-lg flex-shrink-0">
+                  {meal.amountLabel}
+                </span>
+              </div>
+              {meal.ingredients.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {meal.ingredients.map(ingredient => (
+                    <span key={ingredient.name}
+                      className="text-[9px] text-warm-500 bg-warm-50 px-1.5 py-0.5 rounded-full">
+                      {ingredient.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        {meals.length > 12 && (
+          <button onClick={() => setShowAll(value => !value)}
+            className="w-full mt-3 py-2.5 rounded-xl bg-warm-200 text-[11px] font-bold text-warm-600 active:scale-[0.99] transition-transform">
+            {showAll ? '최근 기록만 보기' : `전체 ${meals.length}건 보기`}
+          </button>
+        )}
+      </Card>
+    </div>
+  )
+}
+
+function RecordStat({ value, label }) {
+  return (
+    <div className="bg-warm-100 rounded-xl p-2.5 text-center">
+      <p className="text-[17px] font-bold text-warm-900">{value}</p>
+      <p className="text-[9px] font-semibold text-warm-400 mt-0.5">{label}</p>
+    </div>
+  )
+}
+
+function formatDate(value) {
+  if (!value) return '-'
+  const [, month, day] = value.split('-')
+  return `${Number(month)}월 ${Number(day)}일`
+}
+
+function formatMonth(value) {
+  const [year, month] = value.split('-')
+  return `${year}년 ${Number(month)}월`
 }
 
 // ── 검색 결과 ──

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSettings } from '../context/SettingsContext'
 import { fetchBabyTimeData, saveBabyTimeData } from '../github'
 import { FEEDING_GUIDE, SLEEP_GUIDE, MILESTONES_DETAIL, SOLID_FOOD_GUIDE, SOURCES, getGuideForAge } from '../data/babyReference'
-import { readBabyTimeFile, mergeAndSort } from '../data/babyTimeParser'
+import { readBabyTimeFile, replaceMonths } from '../data/babyTimeParser'
 import { analyzeBabyData } from '../data/babyAnalyzer'
 import { VACCINATIONS, VACCINATION_SOURCE_URL } from '../data/vaccinations'
 import WeaningSection from '../components/WeaningSection'
@@ -214,7 +214,7 @@ export default function Baby() {
         const records = await readBabyTimeFile(file)
         allRecords.push(...records)
       }
-      const sorted = mergeAndSort([allRecords])
+      const sorted = replaceMonths(babyRecords || [], allRecords)
       setBabyRecords(sorted)
 
       // GitHub에 저장
@@ -229,7 +229,7 @@ export default function Baby() {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
     }
-  }, [babyDataSha])
+  }, [babyDataSha, babyRecords])
 
   if (settingsLoading) {
     return (
@@ -455,7 +455,7 @@ export default function Baby() {
 
         {/* ── 이유식 섹션 ── */}
         {section === 'weaning' && (
-          <WeaningSection age={age} />
+          <WeaningSection age={age} records={babyRecords || []} />
         )}
 
         {/* ── 표준 가이드 섹션 ── */}
