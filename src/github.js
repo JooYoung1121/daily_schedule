@@ -42,7 +42,10 @@ function fromBase64(b64) {
 // ─── Generic file helpers ─────────────────────────────────────────────────────
 
 async function fetchFile(path, fallback) {
-  const res = await fetch(apiUrl(path), { headers: authHeaders() })
+  const res = await fetch(apiUrl(path), {
+    headers: authHeaders(),
+    cache: 'no-store',
+  })
   if (res.status === 404) return { data: fallback, sha: null }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
@@ -61,6 +64,8 @@ async function fetchFile(path, fallback) {
       ...authHeaders(),
       Accept: 'application/vnd.github.raw+json',
     },
+    // 같은 URL의 메타데이터 응답을 브라우저 캐시가 재사용하지 않도록 한다.
+    cache: 'no-store',
   })
   if (!rawRes.ok) {
     const body = await rawRes.json().catch(() => ({}))
