@@ -8,6 +8,12 @@ const CATEGORY_META = [
   { id: '유제품', label: '유제품', icon: '🥣', hint: '무가당 요구르트·살균 저염 치즈' },
 ]
 
+export const WEANING_VENDORS = [
+  { id: 'cle', name: '클레', aliases: ['클레'] },
+  { id: 'lusol', name: '루솔', aliases: ['루솔', '루쏠'] },
+  { id: 'sangol', name: '산골이유식', aliases: ['산골이유식'] },
+]
+
 export const AGE_FEEDING_GUIDES = [
   {
     minDays: 120,
@@ -97,6 +103,24 @@ function getMealMenu(record) {
   return [record.weaningFood, record.memo].filter(Boolean).join(' · ')
 }
 
+export function splitMenuAndVendor(value) {
+  const rawMenu = String(value || '').trim()
+  const vendor = WEANING_VENDORS.find(item =>
+    item.aliases.some(alias => rawMenu.includes(alias)),
+  ) || null
+
+  if (!vendor) return { menu: rawMenu, vendor: null }
+
+  const menu = vendor.aliases
+    .reduce((result, alias) => result.replaceAll(alias, ' '), rawMenu)
+    .replace(/\s*·\s*/g, ' · ')
+    .replace(/(?:\s*·\s*)+$/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+
+  return { menu, vendor }
+}
+
 function dateMinusDays(dateString, days) {
   const date = new Date(`${dateString}T00:00:00`)
   date.setDate(date.getDate() - days)
@@ -116,12 +140,15 @@ export function analyzeWeaningRecords(records = [], totalDays = 0) {
   const meals = records
     .filter(record => record.type === '이유식')
     .map(record => {
-      const menu = getMealMenu(record)
+      const rawMenu = getMealMenu(record)
+      const { menu, vendor } = splitMenuAndVendor(rawMenu)
       const refused = /안\s*먹|거부/.test(menu)
       const ingredients = findIngredientsInText(menu)
       return {
         ...record,
         menu: menu || '메뉴 미기록',
+        rawMenu: rawMenu || '메뉴 미기록',
+        vendor,
         refused,
         ingredients,
         amountLabel: record.amountMl
@@ -188,6 +215,24 @@ export function analyzeWeaningRecords(records = [], totalDays = 0) {
     ingredients: [...summary.ingredients],
   }))
 
+  const vendorMap = new Map()
+  meals.forEach(meal => {
+    if (!meal.vendor) return
+    const summary = vendorMap.get(meal.vendor.id) || {
+      vendor: meal.vendor,
+      mealCount: 0,
+      latestDate: meal.startDate,
+      ingredients: new Set(),
+    }
+    summary.mealCount += 1
+    summary.latestDate = meal.startDate
+    meal.ingredients.forEach(ingredient => summary.ingredients.add(ingredient.name))
+    vendorMap.set(meal.vendor.id, summary)
+  })
+  const vendors = [...vendorMap.values()]
+    .map(summary => ({ ...summary, ingredients: [...summary.ingredients] }))
+    .sort((a, b) => b.mealCount - a.mealCount)
+
   const triedNames = new Set(triedIngredients.map(item => item.ingredient.name))
   const nextIngredients = INGREDIENTS
     .filter(ingredient => !triedNames.has(ingredient.name))
@@ -217,6 +262,10 @@ export function analyzeWeaningRecords(records = [], totalDays = 0) {
     allergenProgress,
     nextIngredients,
     monthly,
+    vendors,
+    vendorUnspecifiedCount: meals.filter(meal =>
+      meal.menu !== '메뉴 미기록' && !meal.vendor
+    ).length,
     ageGuide: getAgeGuide(totalDays),
     dateRange: meals.length
       ? { from: meals[0].startDate, to: meals.at(-1).startDate }

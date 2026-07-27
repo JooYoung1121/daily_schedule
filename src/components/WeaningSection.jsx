@@ -140,7 +140,7 @@ function RecordTab({ analysis }) {
   const {
     meals, latestMeals, triedIngredients, refusedIngredients, categoryProgress,
     allergenProgress, nextIngredients, monthly, ageGuide, dateRange,
-    recentMeals, menuRecordedCount,
+    recentMeals, menuRecordedCount, vendors, vendorUnspecifiedCount,
   } = analysis
 
   if (!meals.length) {
@@ -180,7 +180,7 @@ function RecordTab({ analysis }) {
           <RecordStat value={`${recentMeals.length}회`} label="최근 7일" />
         </div>
         <p className="text-[10px] text-warm-400 mt-3 leading-relaxed">
-          메뉴가 적힌 {menuRecordedCount}건의 종류·메모만 분류했어요. 시판 이유식의 전체 원재료는 제품 표시를 별도로 확인해주세요.
+          메뉴가 적힌 {menuRecordedCount}건은 앞부분을 재료, 뒷부분의 클레·루솔·산골이유식을 업체로 나눴어요. 시판 이유식의 전체 원재료는 제품 표시를 별도로 확인해주세요.
         </p>
       </Card>
 
@@ -203,6 +203,39 @@ function RecordTab({ analysis }) {
         </p>
         <SourceLine ids={['KDCA', 'WHO']} />
       </Card>
+
+      {vendors.length > 0 && (
+        <Card>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div>
+              <h3 className="text-[14px] font-bold text-warm-900">구매 업체별 기록</h3>
+              <p className="text-[10px] text-warm-400 mt-0.5">메모 끝의 업체명을 자동 분리</p>
+            </div>
+            <span className="text-[18px]">🏷️</span>
+          </div>
+          <div className="space-y-2">
+            {vendors.map(summary => (
+              <div key={summary.vendor.id} className="bg-warm-100 rounded-xl p-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-[12px] font-bold text-warm-800">{summary.vendor.name}</p>
+                  <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">업체</span>
+                  <span className="ml-auto text-[10px] text-warm-500">{summary.mealCount}회</span>
+                </div>
+                {summary.ingredients.length > 0 && (
+                  <p className="text-[10px] text-warm-500 mt-1.5 leading-relaxed">
+                    {summary.ingredients.join(' · ')}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+          {vendorUnspecifiedCount > 0 && (
+            <p className="text-[10px] text-warm-400 mt-2">
+              업체 표기 없음 {vendorUnspecifiedCount}건
+            </p>
+          )}
+        </Card>
+      )}
 
       <Card>
         <div className="flex items-center justify-between gap-2 mb-3">
@@ -316,7 +349,7 @@ function RecordTab({ analysis }) {
         <div className="flex items-center justify-between mb-2.5">
           <div>
             <h3 className="text-[14px] font-bold text-warm-900">날짜별 이유식</h3>
-            <p className="text-[10px] text-warm-400 mt-0.5">종류·메모 원문과 섭취량</p>
+            <p className="text-[10px] text-warm-400 mt-0.5">재료·업체·섭취량을 분리해 표시</p>
           </div>
           <span className="text-[10px] text-warm-400">{showAll ? `${meals.length}건 전체` : '최근 12건'}</span>
         </div>
@@ -331,6 +364,11 @@ function RecordTab({ analysis }) {
                     </p>
                     {meal.refused && (
                       <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">안 먹음</span>
+                    )}
+                    {meal.vendor && (
+                      <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">
+                        업체 · {meal.vendor.name}
+                      </span>
                     )}
                   </div>
                   <p className={`text-[13px] font-bold mt-0.5 ${
