@@ -49,7 +49,24 @@ async function fetchFile(path, fallback) {
     throw new Error(body.message || `GitHub API ${res.status}`)
   }
   const json = await res.json()
-  return { data: JSON.parse(fromBase64(json.content)), sha: json.sha }
+
+  // Contents API는 1MB가 넘는 파일의 content를 빈 문자열(encoding: none)로
+  // 반환한다. 이 경우 raw 미디어 타입으로 본문을 한 번 더 가져온다.
+  if (json.encoding === 'base64' && json.content) {
+    return { data: JSON.parse(fromBase64(json.content)), sha: json.sha }
+  }
+
+  const rawRes = await fetch(apiUrl(path), {
+    headers: {
+      ...authHeaders(),
+      Accept: 'application/vnd.github.raw+json',
+    },
+  })
+  if (!rawRes.ok) {
+    const body = await rawRes.json().catch(() => ({}))
+    throw new Error(body.message || `GitHub raw API ${rawRes.status}`)
+  }
+  return { data: await rawRes.json(), sha: json.sha }
 }
 
 async function saveFile(path, data, sha, commitMsg) {

@@ -20,7 +20,12 @@ const SUB_TABS = [
 
 const srcLinks = (ids) => ids.map(id => WEANING_SOURCES[id]).filter(Boolean)
 
-export default function WeaningSection({ age, records = [] }) {
+export default function WeaningSection({
+  age,
+  records = [],
+  dataLoading = false,
+  dataError = false,
+}) {
   const totalDays = age?.totalDays ?? 0
   const currentStageIdx = getStageIndexByDays(totalDays)
   const weaning = useMemo(
@@ -86,7 +91,13 @@ export default function WeaningSection({ age, records = [] }) {
             ))}
           </div>
 
-          {sub === 'record' && <RecordTab analysis={weaning} />}
+          {sub === 'record' && (
+            <RecordTab
+              analysis={weaning}
+              dataLoading={dataLoading}
+              dataError={dataError}
+            />
+          )}
           {sub === 'start'  && <StartTab currentStageIdx={currentStageIdx} totalDays={totalDays} />}
           {sub === 'stages' && <StagesTab currentStageIdx={currentStageIdx} />}
           {sub === 'foods'  && <FoodsTab />}
@@ -135,13 +146,32 @@ function StageBadge({ stageId }) {
 }
 
 // ── 실제 BabyTime 이유식 기록 ──
-function RecordTab({ analysis }) {
+function RecordTab({ analysis, dataLoading, dataError }) {
   const [showAll, setShowAll] = useState(false)
   const {
     meals, latestMeals, triedIngredients, refusedIngredients, categoryProgress,
     allergenProgress, nextIngredients, monthly, ageGuide, dateRange,
     recentMeals, menuRecordedCount, vendors, vendorUnspecifiedCount,
   } = analysis
+
+  if (dataLoading) {
+    return (
+      <Card className="text-center py-8">
+        <div className="text-4xl mb-3 animate-pulse">🥣</div>
+        <h3 className="text-[15px] font-bold text-warm-900">이유식 기록을 불러오는 중이에요</h3>
+      </Card>
+    )
+  }
+
+  if (dataError) {
+    return (
+      <Card className="text-center py-8">
+        <div className="text-4xl mb-3">⚠️</div>
+        <h3 className="text-[15px] font-bold text-warm-900">이유식 기록을 불러오지 못했어요</h3>
+        <p className="text-[12px] text-warm-500 mt-1.5">잠시 후 페이지를 새로고침해주세요.</p>
+      </Card>
+    )
+  }
 
   if (!meals.length) {
     return (

@@ -157,6 +157,8 @@ export default function Baby() {
   const [selectedMonth, setSelectedMonth] = useState(null)
   const [section, setSection] = useState('dev')
   const [babyRecords, setBabyRecords] = useState(null)
+  const [babyDataLoading, setBabyDataLoading] = useState(true)
+  const [babyDataError, setBabyDataError] = useState(false)
   const [analysis, setAnalysis] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [babyDataSha, setBabyDataSha] = useState(null)
@@ -167,13 +169,19 @@ export default function Baby() {
 
   // 저장된 BabyTime 데이터 로드
   useEffect(() => {
-    if (!birthdate) return
+    if (!birthdate) {
+      setBabyDataLoading(false)
+      return
+    }
+    setBabyDataLoading(true)
+    setBabyDataError(false)
     fetchBabyTimeData().then(({ babyData, sha }) => {
-      if (babyData?.records) {
-        setBabyRecords(babyData.records)
-        setBabyDataSha(sha)
-      }
-    }).catch(() => {})
+      setBabyRecords(babyData?.records || [])
+      setBabyDataSha(sha)
+    }).catch(() => {
+      setBabyRecords([])
+      setBabyDataError(true)
+    }).finally(() => setBabyDataLoading(false))
   }, [birthdate])
 
   // 레코드 변경시 분석 실행
@@ -455,7 +463,12 @@ export default function Baby() {
 
         {/* ── 이유식 섹션 ── */}
         {section === 'weaning' && (
-          <WeaningSection age={age} records={babyRecords || []} />
+          <WeaningSection
+            age={age}
+            records={babyRecords || []}
+            dataLoading={babyDataLoading}
+            dataError={babyDataError}
+          />
         )}
 
         {/* ── 표준 가이드 섹션 ── */}
