@@ -62,10 +62,10 @@ export default function WeaningSection({
       <div className="relative">
         <input
           value={query} onChange={e => setQuery(e.target.value)}
-          placeholder="재료·키워드 검색 (예: 달걀, 꿀, 소고기, 알레르기)"
-          className="w-full bg-warm-50 border border-warm-200 rounded-2xl pl-9 pr-9 py-2.5 text-[13px] text-warm-800 outline-none focus:border-terra/40"
+          placeholder="재료 검색 (예: 달걀, 소고기, 알레르기)"
+          className="w-full bg-warm-50 border border-warm-200 rounded-2xl pl-10 pr-10 py-3 text-[14px] text-warm-800 outline-none focus:border-terra/50"
         />
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-warm-400">🔍</span>
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[14px] text-warm-400">🔍</span>
         {query && (
           <button onClick={() => setQuery('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-warm-400 text-[14px]">✕</button>
@@ -81,7 +81,7 @@ export default function WeaningSection({
           <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
             {SUB_TABS.map(t => (
               <button key={t.id} onClick={() => setSub(t.id)}
-                className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all active:scale-95"
+                className="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] font-semibold transition-all active:scale-95"
                 style={{
                   background: sub === t.id ? 'rgb(var(--color-terra))' : 'rgb(var(--color-warm-200))',
                   color: sub === t.id ? '#fff' : 'rgb(var(--color-warm-600))',
@@ -186,22 +186,22 @@ function RecordTab({ analysis, dataLoading, dataError }) {
     )
   }
 
-  const visibleMeals = showAll ? [...meals].reverse() : latestMeals
+  const visibleMeals = showAll ? [...meals].reverse() : latestMeals.slice(0, 7)
   const triedAllergens = allergenProgress.filter(item => item.tried)
 
   return (
-    <div className="space-y-3">
-      <Card className="overflow-hidden">
-        <div className="flex items-start justify-between gap-3 mb-3">
+    <div className="space-y-4">
+      <Card className="overflow-hidden border-terra/15 bg-gradient-to-br from-warm-50 to-terra/5">
+        <div className="flex items-start justify-between gap-3 mb-4">
           <div>
-            <p className="text-[10px] font-bold text-terra uppercase tracking-wide">BabyTime 자동 정리</p>
-            <h3 className="text-[17px] font-bold text-warm-900 mt-0.5">이유식 기록 한눈에</h3>
-            <p className="text-[10px] text-warm-400 mt-1">
+            <p className="text-[11px] font-bold text-terra">BabyTime 자동 정리</p>
+            <h3 className="text-[20px] font-bold text-warm-900 mt-1">이유식 기록</h3>
+            <p className="text-[12px] text-warm-500 mt-1">
               {formatDate(dateRange.from)} ~ {formatDate(dateRange.to)}
             </p>
           </div>
-          <span className="text-[10px] font-bold text-sage-dark bg-sage/10 px-2.5 py-1 rounded-full">
-            최신 {formatDate(dateRange.to)}
+          <span className="text-[11px] font-bold text-sage-dark bg-sage/10 px-2.5 py-1.5 rounded-full whitespace-nowrap">
+            {formatDate(dateRange.to)} 갱신
           </span>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -209,236 +209,285 @@ function RecordTab({ analysis, dataLoading, dataError }) {
           <RecordStat value={`${triedIngredients.length}개`} label="확인된 재료" />
           <RecordStat value={`${recentMeals.length}회`} label="최근 7일" />
         </div>
-        <p className="text-[10px] text-warm-400 mt-3 leading-relaxed">
-          메뉴가 적힌 {menuRecordedCount}건은 앞부분을 재료, 뒷부분의 클레·루솔·산골이유식을 업체로 나눴어요. 시판 이유식의 전체 원재료는 제품 표시를 별도로 확인해주세요.
-        </p>
+        <div className="mt-3 rounded-xl bg-warm-100/80 px-3 py-2.5">
+          <p className="text-[11px] text-warm-600 leading-relaxed">
+            메뉴가 적힌 <strong className="text-warm-800">{menuRecordedCount}건</strong>에서 재료와 구매 업체를 나눠 정리했어요.
+          </p>
+        </div>
       </Card>
 
-      <Card className="bg-sage/5">
-        <div className="flex items-center justify-between gap-2 mb-3">
+      <Card className="p-0 overflow-hidden">
+        <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
           <div>
-            <p className="text-[10px] font-bold text-sage-dark">현재 월령 기준</p>
-            <h3 className="text-[15px] font-bold text-warm-900">{ageGuide.label} · {ageGuide.title}</h3>
+            <h3 className="text-[16px] font-bold text-warm-900">최근 먹은 기록</h3>
+            <p className="text-[11px] text-warm-500 mt-1">날짜순으로 메뉴와 업체를 확인해요</p>
+          </div>
+          <span className="text-[11px] font-semibold text-warm-500">
+            {showAll ? `${meals.length}건 전체` : '최근 7건'}
+          </span>
+        </div>
+        <div className="divide-y divide-warm-200/70 border-y border-warm-200/70">
+          {visibleMeals.map((meal, index) => (
+            <MealRecordRow
+              key={`${meal.startDate}-${meal.startTime}-${index}`}
+              meal={meal}
+            />
+          ))}
+        </div>
+        {meals.length > 7 && (
+          <div className="p-3">
+            <button onClick={() => setShowAll(value => !value)}
+              className="w-full py-2.5 rounded-xl bg-warm-200 text-[12px] font-bold text-warm-700 active:scale-[0.99] transition-transform">
+              {showAll ? '최근 기록만 보기' : `전체 ${meals.length}건 보기`}
+            </button>
+          </div>
+        )}
+      </Card>
+
+      <Card className="bg-sage/5 border-sage/15">
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <p className="text-[11px] font-bold text-sage-dark">현재 월령 기준</p>
+            <h3 className="text-[16px] font-bold text-warm-900 mt-0.5">{ageGuide.label}</h3>
+            <p className="text-[12px] text-warm-600 mt-1">{ageGuide.title}</p>
           </div>
           <span className="text-2xl">🥄</span>
         </div>
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <Mini label="횟수" value={ageGuide.meals} />
-          <Mini label="한 끼 양" value={ageGuide.amount} />
-          <Mini label="질감" value={ageGuide.texture} />
+        <div className="space-y-2">
+          <GuideRow label="하루 횟수" value={ageGuide.meals} />
+          <GuideRow label="한 끼 양" value={ageGuide.amount} />
+          <GuideRow label="질감" value={ageGuide.texture} />
         </div>
-        <p className="text-[12px] text-warm-600 leading-relaxed">{ageGuide.focus}</p>
-        <p className="text-[10px] text-warm-400 mt-2">
-          권장량은 목표치가 아닌 참고 범위예요. 실제 섭취량과 성장 상태는 아이마다 다릅니다.
+        <p className="text-[12px] text-warm-700 mt-3 leading-relaxed">{ageGuide.focus}</p>
+        <p className="text-[11px] text-warm-500 mt-2 leading-relaxed">
+          권장량은 참고 범위예요. 실제 섭취량과 성장 상태는 아이마다 달라요.
         </p>
         <SourceLine ids={['KDCA', 'WHO']} />
       </Card>
 
-      {vendors.length > 0 && (
-        <Card>
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <div>
-              <h3 className="text-[14px] font-bold text-warm-900">구매 업체별 기록</h3>
-              <p className="text-[10px] text-warm-400 mt-0.5">메모 끝의 업체명을 자동 분리</p>
-            </div>
-            <span className="text-[18px]">🏷️</span>
-          </div>
-          <div className="space-y-2">
-            {vendors.map(summary => (
-              <div key={summary.vendor.id} className="bg-warm-100 rounded-xl p-3">
-                <div className="flex items-center gap-2">
-                  <p className="text-[12px] font-bold text-warm-800">{summary.vendor.name}</p>
-                  <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">업체</span>
-                  <span className="ml-auto text-[10px] text-warm-500">{summary.mealCount}회</span>
-                </div>
-                {summary.ingredients.length > 0 && (
-                  <p className="text-[10px] text-warm-500 mt-1.5 leading-relaxed">
-                    {summary.ingredients.join(' · ')}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-          {vendorUnspecifiedCount > 0 && (
-            <p className="text-[10px] text-warm-400 mt-2">
-              업체 표기 없음 {vendorUnspecifiedCount}건
-            </p>
-          )}
-        </Card>
-      )}
-
       <Card>
-        <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <h3 className="text-[14px] font-bold text-warm-900">먹어본 식품군</h3>
-            <p className="text-[10px] text-warm-400 mt-0.5">재료명을 적은 BabyTime 기록 기준</p>
+            <h3 className="text-[16px] font-bold text-warm-900">다음에 경험해볼 재료</h3>
+            <p className="text-[11px] text-warm-500 mt-1">아직 기록에서 확인되지 않은 재료예요</p>
           </div>
-          <span className="text-[10px] font-bold text-sage-dark bg-sage/10 px-2 py-1 rounded-full">
-            {categoryProgress.filter(group => group.count > 0).length}/{categoryProgress.length}군
+          <span className="text-[11px] font-bold text-terra bg-terra/10 px-2.5 py-1 rounded-full whitespace-nowrap">
+            추천 4개
           </span>
         </div>
         <div className="space-y-2">
+          {nextIngredients.slice(0, 4).map(ingredient => (
+            <div key={ingredient.name} className="bg-warm-100 rounded-xl px-3 py-2.5">
+              <div className="flex items-center gap-2">
+                <p className="text-[13px] font-bold text-warm-800">{ingredient.name}</p>
+                <span className="text-[10px] font-semibold text-warm-500">{ingredient.cat}</span>
+                {ingredient.allergen && (
+                  <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">알레르기</span>
+                )}
+              </div>
+              <p className="text-[11px] text-warm-600 mt-1 leading-relaxed">{ingredient.note}</p>
+            </div>
+          ))}
+        </div>
+        <p className="text-[11px] text-warm-500 mt-3 leading-relaxed">
+          필수 순서가 아니라 식품 다양성을 위한 참고 목록입니다.
+        </p>
+      </Card>
+
+      {refusedIngredients.length > 0 && (
+        <Card className="bg-amber/5">
+          <h3 className="text-[15px] font-bold text-warm-900 mb-2">다시 천천히 시도해볼 음식</h3>
+          <div className="flex flex-wrap gap-1.5">
+            {refusedIngredients.map(item => (
+              <span key={item.ingredient.name}
+                className="text-[11px] font-semibold text-warm-700 bg-warm-100 px-2.5 py-1.5 rounded-full">
+                {item.ingredient.name} · {formatDate(item.lastDate)}
+              </span>
+            ))}
+          </div>
+          <p className="text-[11px] text-warm-500 mt-2 leading-relaxed">새 음식 거부는 자연스러워요. 강요하지 않고 다른 날 다시 경험해보세요.</p>
+        </Card>
+      )}
+
+      <DisclosureCard
+        title="먹어본 재료 자세히"
+        subtitle="식품군과 알레르기 식품을 함께 확인해요"
+        badge={`${triedIngredients.length}개`}
+      >
+        <div className="space-y-2 pt-4">
           {categoryProgress.map(group => (
             <div key={group.id} className="bg-warm-100 rounded-xl p-3">
               <div className="flex items-center gap-2">
-                <span className="text-[15px]">{group.icon}</span>
-                <p className="text-[12px] font-bold text-warm-800">{group.label}</p>
-                <span className="ml-auto text-[10px] text-warm-400">{group.count}개</span>
+                <span className="text-[16px]">{group.icon}</span>
+                <p className="text-[13px] font-bold text-warm-800">{group.label}</p>
+                <span className="ml-auto text-[11px] font-semibold text-warm-500">{group.count}개</span>
               </div>
               {group.count > 0 ? (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {group.items.map(item => (
                     <span key={item.ingredient.name}
-                      className="text-[10px] font-semibold text-warm-700 bg-warm-50 px-2 py-1 rounded-full">
+                      className="text-[11px] font-semibold text-warm-700 bg-warm-50 px-2 py-1 rounded-full">
                       ✓ {item.ingredient.name}
                     </span>
                   ))}
                 </div>
               ) : (
-                <p className="text-[10px] text-warm-400 mt-1.5">{group.hint}</p>
+                <p className="text-[11px] text-warm-500 mt-1.5">{group.hint}</p>
               )}
             </div>
           ))}
         </div>
-      </Card>
-
-      <Card>
-        <div className="flex items-center justify-between gap-2 mb-2.5">
-          <div>
-            <h3 className="text-[14px] font-bold text-warm-900">알레르기 식품 체크</h3>
-            <p className="text-[10px] text-warm-400 mt-0.5">먹은 기록 {triedAllergens.length}개 확인</p>
-          </div>
-          <span className="text-[18px]">🛡️</span>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {allergenProgress.map(item => (
-            <span key={item.ingredient.name}
-              className={`text-[10px] font-semibold px-2 py-1 rounded-full ${
-                item.tried
-                  ? 'text-sage-dark bg-sage/15'
-                  : 'text-warm-400 bg-warm-100'
-              }`}>
-              {item.tried ? '✓' : '○'} {item.ingredient.name}
-            </span>
-          ))}
-        </div>
-        <p className="text-[10px] text-warm-400 mt-2.5 leading-relaxed">
-          알레르기 식품은 한 번에 하나씩 소량으로 시작해 반응을 관찰하세요. 심한 습진·기존 알레르기가 있다면 먼저 소아과와 상의하세요.
-        </p>
-        <SourceLine ids={['KDCA', 'CDC']} />
-      </Card>
-
-      <Card>
-        <h3 className="text-[14px] font-bold text-warm-900 mb-1">다음에 경험해볼 재료</h3>
-        <p className="text-[10px] text-warm-400 mb-2.5">
-          아직 메모에서 확인되지 않은 재료예요. 필수 순서가 아니라 다양성을 위한 참고 목록입니다.
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          {nextIngredients.map(ingredient => (
-            <div key={ingredient.name} className="bg-warm-100 rounded-xl p-2.5">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <p className="text-[12px] font-bold text-warm-800">{ingredient.name}</p>
-                {ingredient.allergen && (
-                  <span className="text-[8px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">알레르기</span>
-                )}
-              </div>
-              <p className="text-[9px] text-warm-400 mt-1">{ingredient.cat} · {ingredient.note}</p>
+        <div className="mt-4 pt-4 border-t border-warm-200/70">
+          <div className="flex items-center justify-between gap-2 mb-2.5">
+            <div>
+              <h4 className="text-[14px] font-bold text-warm-900">알레르기 식품 체크</h4>
+              <p className="text-[11px] text-warm-500 mt-0.5">먹은 기록에서 {triedAllergens.length}개 확인</p>
             </div>
-          ))}
-        </div>
-      </Card>
-
-      {refusedIngredients.length > 0 && (
-        <Card className="bg-amber/5">
-          <h3 className="text-[13px] font-bold text-warm-900 mb-2">다시 천천히 시도해볼 음식</h3>
+            <span className="text-[18px]">🛡️</span>
+          </div>
           <div className="flex flex-wrap gap-1.5">
-            {refusedIngredients.map(item => (
+            {allergenProgress.map(item => (
               <span key={item.ingredient.name}
-                className="text-[10px] font-semibold text-warm-600 bg-warm-100 px-2 py-1 rounded-full">
-                {item.ingredient.name} · {formatDate(item.lastDate)}
+                className={`text-[11px] font-semibold px-2.5 py-1.5 rounded-full ${
+                  item.tried
+                    ? 'text-sage-dark bg-sage/15'
+                    : 'text-warm-500 bg-warm-100'
+                }`}>
+                {item.tried ? '✓' : '○'} {item.ingredient.name}
               </span>
             ))}
           </div>
-          <p className="text-[10px] text-warm-400 mt-2">새 음식 거부는 자연스러워요. 강요하지 않고 다른 날 다시 경험해보세요.</p>
-        </Card>
+          <p className="text-[11px] text-warm-500 mt-3 leading-relaxed">
+            알레르기 식품은 한 번에 하나씩 소량으로 시작해 반응을 관찰하세요.
+          </p>
+          <SourceLine ids={['KDCA', 'CDC']} />
+        </div>
+      </DisclosureCard>
+
+      {vendors.length > 0 && (
+        <DisclosureCard
+          title="구매 업체별 기록"
+          subtitle="메모 끝의 업체명을 자동으로 분리했어요"
+          badge={`${vendors.length}곳`}
+        >
+          <div className="space-y-2 pt-4">
+            {vendors.map(summary => (
+              <div key={summary.vendor.id} className="bg-warm-100 rounded-xl p-3">
+                <div className="flex items-center gap-2">
+                  <p className="text-[13px] font-bold text-warm-800">{summary.vendor.name}</p>
+                  <span className="ml-auto text-[12px] font-bold text-terra">{summary.mealCount}회</span>
+                </div>
+                {summary.ingredients.length > 0 && (
+                  <p className="text-[11px] text-warm-600 mt-1.5 leading-relaxed">
+                    {summary.ingredients.join(' · ')}
+                  </p>
+                )}
+              </div>
+            ))}
+            {vendorUnspecifiedCount > 0 && (
+              <p className="text-[11px] text-warm-500 px-1">
+                업체 표기 없음 {vendorUnspecifiedCount}건
+              </p>
+            )}
+            <p className="text-[10px] text-warm-400 px-1 leading-relaxed">
+              시판 이유식의 전체 원재료는 제품 표시를 별도로 확인해주세요.
+            </p>
+          </div>
+        </DisclosureCard>
       )}
 
-      <Card>
-        <h3 className="text-[14px] font-bold text-warm-900 mb-2.5">월별 기록</h3>
-        <div className="grid grid-cols-2 gap-2">
+      <DisclosureCard
+        title="월별 기록"
+        subtitle="월마다 먹은 횟수와 재료 수를 확인해요"
+        badge={`${monthly.length}개월`}
+      >
+        <div className="grid grid-cols-2 gap-2 pt-4">
           {monthly.map(month => (
-            <div key={month.month} className="bg-warm-100 rounded-xl p-2.5">
-              <p className="text-[11px] font-bold text-warm-800">{formatMonth(month.month)}</p>
-              <p className="text-[10px] text-warm-500 mt-0.5">{month.mealCount}회 · 재료 {month.ingredients.length}개</p>
+            <div key={month.month} className="bg-warm-100 rounded-xl p-3">
+              <p className="text-[12px] font-bold text-warm-800">{formatMonth(month.month)}</p>
+              <p className="text-[11px] text-warm-600 mt-1">{month.mealCount}회 · 재료 {month.ingredients.length}개</p>
             </div>
           ))}
         </div>
-      </Card>
-
-      <Card>
-        <div className="flex items-center justify-between mb-2.5">
-          <div>
-            <h3 className="text-[14px] font-bold text-warm-900">날짜별 이유식</h3>
-            <p className="text-[10px] text-warm-400 mt-0.5">재료·업체·섭취량을 분리해 표시</p>
-          </div>
-          <span className="text-[10px] text-warm-400">{showAll ? `${meals.length}건 전체` : '최근 12건'}</span>
-        </div>
-        <div className="space-y-2">
-          {visibleMeals.map((meal, index) => (
-            <div key={`${meal.startDate}-${meal.startTime}-${index}`} className="bg-warm-100 rounded-xl p-3">
-              <div className="flex items-start gap-2">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <p className="text-[11px] font-bold text-warm-500">
-                      {formatDate(meal.startDate)} · {meal.startTime}
-                    </p>
-                    {meal.refused && (
-                      <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">안 먹음</span>
-                    )}
-                    {meal.vendor && (
-                      <span className="text-[9px] font-bold text-terra bg-terra/10 px-1.5 py-0.5 rounded-full">
-                        업체 · {meal.vendor.name}
-                      </span>
-                    )}
-                  </div>
-                  <p className={`text-[13px] font-bold mt-0.5 ${
-                    meal.menu === '메뉴 미기록' ? 'text-warm-400' : 'text-warm-800'
-                  }`}>{meal.menu}</p>
-                </div>
-                <span className="text-[11px] font-bold text-sage-dark bg-sage/10 px-2 py-1 rounded-lg flex-shrink-0">
-                  {meal.amountLabel}
-                </span>
-              </div>
-              {meal.ingredients.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {meal.ingredients.map(ingredient => (
-                    <span key={ingredient.name}
-                      className="text-[9px] text-warm-500 bg-warm-50 px-1.5 py-0.5 rounded-full">
-                      {ingredient.name}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        {meals.length > 12 && (
-          <button onClick={() => setShowAll(value => !value)}
-            className="w-full mt-3 py-2.5 rounded-xl bg-warm-200 text-[11px] font-bold text-warm-600 active:scale-[0.99] transition-transform">
-            {showAll ? '최근 기록만 보기' : `전체 ${meals.length}건 보기`}
-          </button>
-        )}
-      </Card>
+      </DisclosureCard>
     </div>
   )
 }
 
 function RecordStat({ value, label }) {
   return (
-    <div className="bg-warm-100 rounded-xl p-2.5 text-center">
-      <p className="text-[17px] font-bold text-warm-900">{value}</p>
-      <p className="text-[9px] font-semibold text-warm-400 mt-0.5">{label}</p>
+    <div className="bg-warm-50/90 border border-warm-200/70 rounded-xl p-3 text-center">
+      <p className="text-[20px] font-bold text-warm-900 leading-none">{value}</p>
+      <p className="text-[11px] font-semibold text-warm-500 mt-1.5">{label}</p>
     </div>
+  )
+}
+
+function MealRecordRow({ meal }) {
+  return (
+    <div className="flex items-start gap-3 px-4 py-3.5">
+      <div className="w-[54px] flex-shrink-0 rounded-xl bg-warm-100 px-1 py-2 text-center">
+        <p className="text-[12px] font-bold text-warm-800">{formatDate(meal.startDate)}</p>
+        <p className="text-[10px] text-warm-500 mt-0.5">{meal.startTime}</p>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <p className={`text-[14px] font-bold leading-snug ${
+            meal.menu === '메뉴 미기록' ? 'text-warm-500' : 'text-warm-900'
+          }`}>{meal.menu}</p>
+          <span className="text-[12px] font-bold text-sage-dark whitespace-nowrap">
+            {meal.amountLabel}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+          {meal.vendor && (
+            <span className="text-[10px] font-bold text-terra bg-terra/10 px-2 py-1 rounded-full">
+              {meal.vendor.name}
+            </span>
+          )}
+          {meal.refused && (
+            <span className="text-[10px] font-bold text-terra bg-terra/10 px-2 py-1 rounded-full">안 먹음</span>
+          )}
+          {meal.ingredients.map(ingredient => (
+            <span key={ingredient.name}
+              className="text-[10px] text-warm-600 bg-warm-100 px-2 py-1 rounded-full">
+              {ingredient.name}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function GuideRow({ label, value }) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl bg-warm-50/80 border border-sage/10 px-3 py-2.5">
+      <p className="w-[62px] flex-shrink-0 text-[11px] font-bold text-sage-dark">{label}</p>
+      <p className="text-[12px] text-warm-700 leading-relaxed">{value}</p>
+    </div>
+  )
+}
+
+function DisclosureCard({ title, subtitle, badge, children }) {
+  return (
+    <details className="group bg-warm-50 rounded-2xl shadow-warm-sm border border-warm-200/50 overflow-hidden">
+      <summary className="list-none cursor-pointer px-4 py-4 [&::-webkit-details-marker]:hidden">
+        <div className="flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-[15px] font-bold text-warm-900">{title}</h3>
+            <p className="text-[11px] text-warm-500 mt-1 leading-relaxed">{subtitle}</p>
+          </div>
+          <span className="text-[11px] font-bold text-warm-600 bg-warm-100 px-2.5 py-1 rounded-full whitespace-nowrap">
+            {badge}
+          </span>
+          <span className="text-[16px] text-warm-500 transition-transform group-open:rotate-180">⌄</span>
+        </div>
+      </summary>
+      <div className="px-4 pb-4 border-t border-warm-200/60">
+        {children}
+      </div>
+    </details>
   )
 }
 
