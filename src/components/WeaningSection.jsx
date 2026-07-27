@@ -5,9 +5,11 @@ import {
   REFERENCE_SITES, WEANING_SOURCES, getStageIndexByDays,
 } from '../data/weaningGuide'
 import { analyzeWeaningRecords } from '../data/weaningAnalyzer'
+import IngredientMap from './IngredientMap'
 
 const SUB_TABS = [
   { id: 'record', label: '먹은 기록', icon: '📝' },
+  { id: 'map', label: '식재료 지도', icon: '🗺️' },
   { id: 'start',  label: '시작',   icon: '🚀' },
   { id: 'stages', label: '단계별', icon: '📈' },
   { id: 'foods',  label: '식재료', icon: '🥕' },
@@ -96,6 +98,13 @@ export default function WeaningSection({
               analysis={weaning}
               dataLoading={dataLoading}
               dataError={dataError}
+            />
+          )}
+          {sub === 'map' && (
+            <IngredientMap
+              analysis={weaning}
+              totalDays={totalDays}
+              dataLoading={dataLoading}
             />
           )}
           {sub === 'start'  && <StartTab currentStageIdx={currentStageIdx} totalDays={totalDays} />}
