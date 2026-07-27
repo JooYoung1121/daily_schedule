@@ -122,7 +122,7 @@ function positionIngredients(group) {
   const radiusY = Math.max(60, group.height / 2 - 70)
 
   return group.ingredients.map((ingredient, index) => {
-    if (count === 1) return { ingredient, x: group.cx, y: group.cy + 12 }
+    if (count === 1) return { ingredient, x: group.cx, y: group.cy + 12, index }
 
     const progress = 0.20 + (0.75 * Math.sqrt(index / Math.max(1, count - 1)))
     const angle = (index * 2.399963229728653) - Math.PI / 2
@@ -130,8 +130,22 @@ function positionIngredients(group) {
       ingredient,
       x: group.cx + Math.cos(angle) * radiusX * progress,
       y: group.cy + 18 + Math.sin(angle) * radiusY * progress,
+      index,
     }
   })
+}
+
+function shortMapLabel(value) {
+  const aliases = {
+    '오트밀(귀리)': '귀리',
+    '밀(글루텐)': '밀',
+    '자두(푸룬)': '푸룬',
+    '감귤·오렌지': '감귤',
+    '새우·갑각류': '갑각류',
+    '플레인 요구르트': '요구르트',
+    '생우유(음용)': '생우유',
+  }
+  return aliases[value] || value
 }
 
 function formatDate(value) {
@@ -358,6 +372,8 @@ export default function IngredientMap({ analysis, totalDays = 0, dataLoading = f
     setSelectedName(ingredient.name)
   }
 
+  const recommendedNow = INGREDIENTS.filter(ingredient => ingredientState(ingredient).recommended)
+
   return (
     <div className="space-y-3">
       <section className="bg-warm-50 rounded-2xl p-4 shadow-warm-sm border border-warm-200/40">
@@ -407,6 +423,27 @@ export default function IngredientMap({ analysis, totalDays = 0, dataLoading = f
         <span className="text-[10px] text-warm-500">주황 테두리 · 거부 기록</span>
       </div>
 
+      {!dataLoading && recommendedNow.length > 0 && (
+        <div className="rounded-2xl bg-terra/5 border border-terra/10 px-3.5 py-3">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <p className="text-[12px] font-bold text-warm-800">다음으로 살펴볼 재료</p>
+            <span className="text-[10px] font-semibold text-terra">현재 월령 기준</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {recommendedNow.map(ingredient => (
+              <button
+                key={ingredient.name}
+                type="button"
+                onClick={() => setSelectedName(ingredient.name)}
+                className="rounded-full bg-warm-50 border border-terra/20 px-2.5 py-1.5 text-[11px] font-semibold text-warm-700"
+              >
+                {ingredient.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div
         ref={containerRef}
         data-testid="ingredient-map"
@@ -419,7 +456,7 @@ export default function IngredientMap({ analysis, totalDays = 0, dataLoading = f
         onPointerCancel={handlePointerUp}
       >
         <div className="absolute left-3 top-3 z-30 rounded-full bg-warm-50/90 px-2.5 py-1.5 text-[10px] font-semibold text-warm-600 shadow-warm-sm">
-          {zoom < LABEL_ZOOM ? '식품군을 누르면 확대돼요' : '빈 곳을 끌어 이동해요'}
+          {zoom < LABEL_ZOOM ? '축소 화면은 그룹 현황 · 누르면 재료명 보기' : '빈 곳을 끌어 이동해요'}
         </div>
 
         <div className="absolute right-3 top-3 z-30 flex flex-col gap-1.5">
@@ -448,39 +485,48 @@ export default function IngredientMap({ analysis, totalDays = 0, dataLoading = f
             transform: `translate(calc(-50% + ${pan.x}px), calc(-50% + ${pan.y}px)) scale(${worldScale})`,
           }}
         >
-          {positionedGroups.map(group => (
-            <div
-              key={group.key}
-              className="absolute rounded-[42%]"
-              style={{
-                left: group.cx - group.width / 2,
-                top: group.cy - group.height / 2,
-                width: group.width,
-                height: group.height,
-                background: group.color.background,
-                border: `3px solid ${group.color.border}`,
-              }}
-            >
-              <button
-                type="button"
-                data-map-action
-                onClick={() => {
-                  if (!draggedRef.current) focusGroup(group)
+          {positionedGroups.map(group => {
+            const eatenCount = group.ingredients.filter(ingredient => ingredientState(ingredient).eaten).length
+            const groupNext = group.ingredients.filter(ingredient => ingredientState(ingredient).recommended)
+            return (
+              <div
+                key={group.key}
+                className="absolute rounded-[42%]"
+                style={{
+                  left: group.cx - group.width / 2,
+                  top: group.cy - group.height / 2,
+                  width: group.width,
+                  height: group.height,
+                  background: group.color.background,
+                  border: `3px solid ${group.color.border}`,
                 }}
-                className="absolute left-6 top-5 z-30 rounded-2xl px-2 py-1 text-left hover:bg-warm-50/50"
-                aria-label={`${group.label} 영역 확대`}
               >
-                <span className="block text-[28px] font-bold text-warm-800">
-                  {group.icon} {group.label}
-                </span>
-                <span className="block text-[19px] font-semibold text-warm-500 mt-0.5">
-                  {group.ingredients.length}개
-                </span>
-              </button>
-            </div>
-          ))}
+                <button
+                  type="button"
+                  data-map-action
+                  onClick={() => {
+                    if (!draggedRef.current) focusGroup(group)
+                  }}
+                  className="absolute left-6 top-5 z-30 rounded-2xl bg-warm-50/75 px-2.5 py-1.5 text-left shadow-sm hover:bg-warm-50/90"
+                  aria-label={`${group.label} 영역 확대`}
+                >
+                  <span className="block text-[28px] font-bold text-warm-800">
+                    {group.icon} {group.label}
+                  </span>
+                  <span className="block text-[19px] font-semibold text-warm-600 mt-0.5">
+                    {eatenCount}/{group.ingredients.length} 먹음
+                  </span>
+                  {zoom < LABEL_ZOOM && groupNext.length > 0 && (
+                    <span className="block text-[17px] font-semibold text-terra mt-1">
+                      다음 추천 {groupNext.length}개
+                    </span>
+                  )}
+                </button>
+              </div>
+            )
+          })}
 
-          {positionedGroups.flatMap(group => group.nodes).map(({ ingredient, x, y }) => {
+          {positionedGroups.flatMap(group => group.nodes).map(({ ingredient, x, y, index }) => {
             const state = ingredientState(ingredient)
             const showLabel = zoom >= LABEL_ZOOM
             return (
@@ -520,7 +566,16 @@ export default function IngredientMap({ analysis, totalDays = 0, dataLoading = f
                 {showLabel ? (
                   <span>{state.eaten && '✓ '}{ingredient.name}</span>
                 ) : (
-                  <span>{state.eaten ? '✓' : state.locked ? '·' : state.recommended ? '!' : '○'}</span>
+                  <>
+                    <span>{state.eaten ? '✓' : state.locked ? '·' : state.recommended ? '!' : '○'}</span>
+                    {(state.recommended || selectedName === ingredient.name) && (
+                      <span className={`absolute left-1/2 -translate-x-1/2 max-w-[118px] truncate rounded-lg border border-terra/20 bg-warm-50/95 px-1.5 py-0.5 text-[17px] font-bold text-terra shadow-sm ${
+                        index % 2 === 0 ? 'top-[54px]' : 'bottom-[54px]'
+                      }`}>
+                        {shortMapLabel(ingredient.name)}
+                      </span>
+                    )}
+                  </>
                 )}
               </button>
             )
